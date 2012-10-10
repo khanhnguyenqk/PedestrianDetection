@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include "VW_Marker.h"
 #include "CvPoint_Wrapper.h"
+#include "MotionDetector.h"
 
 VW_Marker::~VW_Marker(void)
 {

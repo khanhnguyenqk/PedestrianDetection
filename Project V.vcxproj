@@ -82,6 +82,7 @@
     <ClInclude Include="CaptureRect.h" />
     <ClInclude Include="ColorChooser.h" />
     <ClInclude Include="CvPoint_Wrapper.h" />
+    <ClInclude Include="MotionDetector.h" />
     <ClInclude Include="Project V.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -94,6 +95,7 @@
     <ClCompile Include="Boundary.cpp" />
     <ClCompile Include="CaptureRect.cpp" />
     <ClCompile Include="ColorChooser.cpp" />
+    <ClCompile Include="MotionDetector.cpp" />
     <ClCompile Include="Project V.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
