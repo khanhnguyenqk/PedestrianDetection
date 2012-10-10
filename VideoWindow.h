@@ -85,7 +85,7 @@ public:
 	virtual int handle(int event) {return Fl_Gl_Window::handle(event);}
 public:
 	virtual void draw();
-	void drawIplImage(IplImage* image);
+	void drawImageOnMainWindow(IplImage* image);
 	bool isInitiated();
 
 	virtual void addDependent(Fl_Slider* slider) {slider_ = slider;}

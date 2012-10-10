@@ -109,14 +109,14 @@ void VideoWindow::draw() {
 			if (currFrame_ == NULL)
 				stop();
 			else {
-				drawIplImage(currFrame_);
+				drawImageOnMainWindow(currFrame_);
 			}
 		} else if ((playStatus_ == PAUSE)) {
 			drawBlackScreen();
 			if (clone_ == NULL)
 				stop();
 			else {
-				drawIplImage(clone_);
+				drawImageOnMainWindow(clone_);
 			}
 		} else if (playStatus_ == STOP)
 			drawBlackScreen();
@@ -125,7 +125,7 @@ void VideoWindow::draw() {
 	updateDependences();
 }
 
-void VideoWindow::drawIplImage(IplImage* image)
+void VideoWindow::drawImageOnMainWindow(IplImage* image)
 {
 	double ox,oy;
 	double x1,y1,x2,y2,x3,y3,x4,y4;

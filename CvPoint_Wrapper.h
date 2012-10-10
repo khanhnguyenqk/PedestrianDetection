@@ -1,3 +1,4 @@
+// Vector calculation on CvPoint
 #ifndef CVPOINT_WRAPPER_H_
 #define CVPOINT_WRAPPER_H_
 

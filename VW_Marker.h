@@ -27,16 +27,19 @@ private:
 	// Cropped Area of Interest (AOI) from drawn box
 	vector<IplImage*> aois_;
 	vector<char*> windowNames_;
-	bool showCroppedPics_;
+	bool showSubwindows_;
 public:
 	VW_Marker(int x,int y , int w, int h,
 		const char* video=0, const char *L=0):VideoWindow(x,y,w,h,video,L) {
 		cloneDone_ = true;
 		drawStatus_ = NEW_RECT;
 		filePercentage_ = 0.95;
-		showCroppedPics_ = false;
+		showSubwindows_ = true;
 	}
 	virtual ~VW_Marker(void);
+
+
+
 	virtual int handle(int event);
 
 // Draw rect
@@ -51,6 +54,11 @@ private:
 	void darkenNonCurrent();
 	int getRelativeMouseX(int x);
 	int getRelativeMouseY(int y);
+
+	// Show cropped pictures
+	void subwindowManage();
+	void drawPictureOnSubwindows();
+	void releaseAoiMemories();
 // Other
 public:
 	string getSaveDirectory(const char* fileName);
@@ -60,7 +68,7 @@ public:
 	bool nextRect();
 	bool prevRect();
 	bool saveScreen();
-	vector<IplImage*> extractROIRects(IplImage *image, vector<CaptureRect> rects, int &size);
+	vector<IplImage*> extractROIRects(IplImage *image, vector<CaptureRect> rects);
 
 // Play control extend
 	virtual void draw();
