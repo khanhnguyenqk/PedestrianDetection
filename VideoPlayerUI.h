@@ -6,7 +6,7 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Value_Slider.H>
-#include "VW_Marker.h"
+#include "AOI_Processor.h"
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_File_Input.H>
@@ -20,7 +20,7 @@ public:
   Fl_Value_Slider *xPan_;
   Fl_Value_Slider *yPan_;
   Fl_Value_Slider *zoom_;
-  VW_Marker *vw_marker_;
+  AOI_ProcessorWindow *aoiProcessorWindow;
   Fl_Slider *slider_;
   Fl_Button *stop_;
   Fl_Button *play_;

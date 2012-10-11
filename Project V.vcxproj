@@ -78,6 +78,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AOI_Processor.h" />
     <ClInclude Include="Boundary.h" />
     <ClInclude Include="CaptureRect.h" />
     <ClInclude Include="ColorChooser.h" />
@@ -92,6 +93,7 @@
     <ClInclude Include="VW_Marker.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AOI_Processor.cpp" />
     <ClCompile Include="Boundary.cpp" />
     <ClCompile Include="CaptureRect.cpp" />
     <ClCompile Include="ColorChooser.cpp" />

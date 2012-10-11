@@ -1,7 +1,7 @@
 #pragma once
 class Boundary
 {
-private:
+protected:
 	int **boundary_;
 	int x_;
 	int y_;

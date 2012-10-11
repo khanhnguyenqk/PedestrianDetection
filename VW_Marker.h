@@ -5,6 +5,7 @@
 #include "videowindow.h"
 #include "CaptureRect.h"
 #include "ColorChooser.h"
+#include "MotionDetector.h"
 
 using namespace std;
 
@@ -13,37 +14,27 @@ typedef vector<CaptureRect>::iterator CR_Iterator;
 class VW_Marker :
 	public VideoWindow
 {
-private:
+protected:
 	bool cloneDone_;
 	CaptureRect cr_;
 	vector<CaptureRect> captureRects_;
 	CR_Iterator currentRect_;
 	int drawStatus_;
 	bool drawnOrChanged_;
-	double filePercentage_;
 	CvPoint lastMousePoint_;
 	ColorChooser colorChooser_;
-
-	// Cropped Area of Interest (AOI) from drawn box
-	vector<IplImage*> aois_;
-	vector<char*> windowNames_;
-	bool showSubwindows_;
+	
 public:
 	VW_Marker(int x,int y , int w, int h,
 		const char* video=0, const char *L=0):VideoWindow(x,y,w,h,video,L) {
 		cloneDone_ = true;
 		drawStatus_ = NEW_RECT;
-		filePercentage_ = 0.95;
-		showSubwindows_ = true;
 	}
 	virtual ~VW_Marker(void);
-
-
-
 	virtual int handle(int event);
 
 // Draw rect
-private:
+protected:
 	void drawRect(IplImage* img, CaptureRect cr);
 	void drawAllRects(IplImage* img);
 	int mouseDrawingRectHandle(int event);
@@ -55,10 +46,6 @@ private:
 	int getRelativeMouseX(int x);
 	int getRelativeMouseY(int y);
 
-	// Show cropped pictures
-	void subwindowManage();
-	void drawPictureOnSubwindows();
-	void releaseAoiMemories();
 // Other
 public:
 	string getSaveDirectory(const char* fileName);

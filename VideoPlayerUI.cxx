@@ -86,18 +86,18 @@ VideoPlayerUI::VideoPlayerUI() {
         zoom_->value(1);
         zoom_->textsize(14);
       } // Fl_Value_Slider* zoom_
-      { vw_marker_ = new VW_Marker(xVideoWindow, yVideoWindow, wVideoWindow, hVideoWindow, 
+      { aoiProcessorWindow = new AOI_ProcessorWindow(xVideoWindow, yVideoWindow, wVideoWindow, hVideoWindow, 
 										NULL, "Video Window");
-        vw_marker_->box(FL_NO_BOX);
-        vw_marker_->color(FL_BACKGROUND_COLOR);
-        vw_marker_->selection_color(FL_BACKGROUND_COLOR);
-        vw_marker_->labeltype(FL_NO_LABEL);
-        vw_marker_->labelfont(0);
-        vw_marker_->labelsize(14);
-        vw_marker_->labelcolor(FL_FOREGROUND_COLOR);
-        vw_marker_->align(Fl_Align(FL_ALIGN_CENTER));
-        vw_marker_->when(FL_WHEN_RELEASE);
-      } // VideoWindow* vw_marker_
+        aoiProcessorWindow->box(FL_NO_BOX);
+        aoiProcessorWindow->color(FL_BACKGROUND_COLOR);
+        aoiProcessorWindow->selection_color(FL_BACKGROUND_COLOR);
+        aoiProcessorWindow->labeltype(FL_NO_LABEL);
+        aoiProcessorWindow->labelfont(0);
+        aoiProcessorWindow->labelsize(14);
+        aoiProcessorWindow->labelcolor(FL_FOREGROUND_COLOR);
+        aoiProcessorWindow->align(Fl_Align(FL_ALIGN_CENTER));
+        aoiProcessorWindow->when(FL_WHEN_RELEASE);
+      } // VideoWindow* aoiProcessorWindow
       { slider_ = new Fl_Slider(xSlider, ySlider, wSlider, hSlider, "Slider");
         slider_->type(3);
         slider_->box(FL_BORDER_BOX);
@@ -156,8 +156,8 @@ VideoPlayerUI::VideoPlayerUI() {
   } // Fl_Double_Window* mainWindow_
 
   // Extra code
-  vw_marker_->addDependent(slider_);
-  vw_marker_->addDependent(videoDetails_);
+  aoiProcessorWindow->addDependent(slider_);
+  aoiProcessorWindow->addDependent(videoDetails_);
 
   // Tool tips
   stop_->tooltip("Stop");
@@ -193,44 +193,44 @@ VideoPlayerUI::VideoPlayerUI() {
 
 // Call back methods
 void VideoPlayerUI::cb_play_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->switchPlayPause();
+	this->aoiProcessorWindow->switchPlayPause();
 }
 void VideoPlayerUI::cb_play(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_play_i(obj, v);
 }
 
 void VideoPlayerUI::cb_stop_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->stop();
+	this->aoiProcessorWindow->stop();
 }
 void VideoPlayerUI::cb_stop(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_stop_i(obj, v);
 }
 
 void VideoPlayerUI::cb_doubleSpeed_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->doubleSpeed();
+	this->aoiProcessorWindow->doubleSpeed();
 }
 void VideoPlayerUI::cb_doubleSpeed(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_doubleSpeed_i(obj, v);
 }
 
 void VideoPlayerUI::cb_halfSpeed_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->halfSpeed();
+	this->aoiProcessorWindow->halfSpeed();
 }
 void VideoPlayerUI::cb_halfSpeed(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_halfSpeed_i(obj, v);
 }
 
 void VideoPlayerUI::cb_prevFrame_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->pause();
-	this->vw_marker_->showPrevFrame();
+	this->aoiProcessorWindow->pause();
+	this->aoiProcessorWindow->showPrevFrame();
 }
 void VideoPlayerUI::cb_prevFrame(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_prevFrame_i(obj, v);
 }
 
 void VideoPlayerUI::cb_nextFrame_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->pause();
-	this->vw_marker_->showNextFrame();
+	this->aoiProcessorWindow->pause();
+	this->aoiProcessorWindow->showNextFrame();
 }
 void VideoPlayerUI::cb_nextFrame(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_nextFrame_i(obj, v);
@@ -238,8 +238,8 @@ void VideoPlayerUI::cb_nextFrame(Fl_Button* obj, void* v) {
 
 void VideoPlayerUI::cb_zoom_i(Fl_Value_Slider * o, void * v)
 {
-	this->vw_marker_->zoomRatio_=o->value();
-	this->vw_marker_->redraw();
+	this->aoiProcessorWindow->zoomRatio_=o->value();
+	this->aoiProcessorWindow->redraw();
 }
 void VideoPlayerUI::cb_zoom(Fl_Value_Slider * o, void * v)
 {
@@ -248,8 +248,8 @@ void VideoPlayerUI::cb_zoom(Fl_Value_Slider * o, void * v)
 
 void VideoPlayerUI::cb_xPan_i(Fl_Value_Slider* o, void*) 
 {
-	this->vw_marker_->xPanRatio_=o->value();
-	this->vw_marker_->redraw();
+	this->aoiProcessorWindow->xPanRatio_=o->value();
+	this->aoiProcessorWindow->redraw();
 }
 void VideoPlayerUI::cb_xPan(Fl_Value_Slider* o, void* v) 
 {
@@ -258,8 +258,8 @@ void VideoPlayerUI::cb_xPan(Fl_Value_Slider* o, void* v)
 
 void VideoPlayerUI::cb_yPan_i(Fl_Value_Slider* o, void*) 
 {
-	this->vw_marker_->yPanRatio_=o->value();
-	this->vw_marker_->redraw();
+	this->aoiProcessorWindow->yPanRatio_=o->value();
+	this->aoiProcessorWindow->redraw();
 }
 void VideoPlayerUI::cb_yPan(Fl_Value_Slider* o, void* v) 
 {
@@ -267,57 +267,57 @@ void VideoPlayerUI::cb_yPan(Fl_Value_Slider* o, void* v)
 }
 
 void VideoPlayerUI::cb_slider_i(Fl_Slider* obj, void* v) {
-	this->vw_marker_->jumpToFrame((int)obj->value());
+	this->aoiProcessorWindow->jumpToFrame((int)obj->value());
 }
 void VideoPlayerUI::cb_slider(Fl_Slider* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_slider_i(obj, v);
 }
 
 void VideoPlayerUI::cb_openFile_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->stop();
-	this->vw_marker_->initiateVideo(this->filePathInput_->value());
-	this->vw_marker_->play();
+	this->aoiProcessorWindow->stop();
+	this->aoiProcessorWindow->initiateVideo(this->filePathInput_->value());
+	this->aoiProcessorWindow->play();
 }
 void VideoPlayerUI::cb_openFile(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_openFile_i(obj, v);
 }
 
 void VideoPlayerUI::cb_newRect_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->setDrawStatus(NEW_RECT);
+	this->aoiProcessorWindow->setDrawStatus(NEW_RECT);
 }
 void VideoPlayerUI::cb_newRect(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_newRect_i(obj, v);
 }
 
 void VideoPlayerUI::cb_delRect_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->deleteCurrentRect();
-	this->vw_marker_->cloneAndDrawRects();
+	this->aoiProcessorWindow->deleteCurrentRect();
+	this->aoiProcessorWindow->cloneAndDrawRects();
 }
 void VideoPlayerUI::cb_delRect(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_delRect_i(obj, v);
 }
 
 void VideoPlayerUI::cb_nextRect_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->nextRect();
-	this->vw_marker_->cloneAndDrawRects();
+	this->aoiProcessorWindow->nextRect();
+	this->aoiProcessorWindow->cloneAndDrawRects();
 }
 void VideoPlayerUI::cb_nextRect(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_nextRect_i(obj, v);
 }
 
 void VideoPlayerUI::cb_prevRect_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->prevRect();
-	this->vw_marker_->cloneAndDrawRects();
+	this->aoiProcessorWindow->prevRect();
+	this->aoiProcessorWindow->cloneAndDrawRects();
 }
 void VideoPlayerUI::cb_prevRect(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_prevRect_i(obj, v);
 }
 
 void VideoPlayerUI::cb_default_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->setNormalSpeed();
-	this->vw_marker_->xPanRatio_ = 0;
-	this->vw_marker_->yPanRatio_ = 0;
-	this->vw_marker_->zoomRatio_ = 1;
+	this->aoiProcessorWindow->setNormalSpeed();
+	this->aoiProcessorWindow->xPanRatio_ = 0;
+	this->aoiProcessorWindow->yPanRatio_ = 0;
+	this->aoiProcessorWindow->zoomRatio_ = 1;
 	this->xPan_->value(0);
 	this->yPan_->value(0);
 	this->zoom_->value(1);
@@ -327,7 +327,7 @@ void VideoPlayerUI::cb_default(Fl_Button* obj, void* v) {
 }
 
 void VideoPlayerUI::cb_save_i(Fl_Button* obj, void* v) {
-	this->vw_marker_->saveScreen();
+	this->aoiProcessorWindow->saveScreen();
 }
 void VideoPlayerUI::cb_save(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_save_i(obj, v);

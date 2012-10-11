@@ -7,7 +7,7 @@ enum {NEW_RECT, MOVE_RECT, RESIZE_TL, RESIZE_TR, RESIZE_BR, RESIZE_BL};
 
 class CaptureRect
 {
-private:
+protected:
 	double cornerPercentage_;
 	CvRect rect_;
 	CvScalar color_;
@@ -16,7 +16,7 @@ private:
 public:
 	CaptureRect(void);
 	~CaptureRect(void);
-private:
+protected:
 	
 public:
 	//Accessors

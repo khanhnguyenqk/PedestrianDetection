@@ -10,7 +10,7 @@ using namespace std;
 
 class ColorChooser
 {
-private:
+protected:
 	list<CvScalar> rainbow_;
 	list<CvScalar>::iterator current_;
 public:

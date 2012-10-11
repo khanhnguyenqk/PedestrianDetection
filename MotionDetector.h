@@ -15,7 +15,7 @@ using namespace std;
 
 class MotionDetector
 {
-private:
+protected:
 	CvSize imgSize_;
 	IplImage* greyImage_;
 	IplImage* colourImage_;

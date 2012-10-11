@@ -11,14 +11,7 @@
 
 VW_Marker::~VW_Marker(void)
 {
-	releaseAoiMemories();
-
-	for (unsigned i=0; i<windowNames_.size(); i++) {
-		delete[] windowNames_[i];
-	}
-	windowNames_.clear();
 	captureRects_.clear();
-	cvDestroyAllWindows();
 }
 
 int VW_Marker::handle(int event) {
@@ -333,52 +326,6 @@ int VW_Marker::getRelativeMouseY(int y) {
 	return (int)ret;
 }
 
-void VW_Marker::subwindowManage() {
-	// Count how many windows are needed
-	int size = aois_.size();
-	int numWindows = windowNames_.size();
-	// Create more if needed
-	if (size > numWindows) {
-		int i = numWindows;
-		for (;i < size; i++) {
-			char *name;
-			name = new char[128];
-			sprintf(name, "Window %05d", i);
-			printf("%s\n", name);
-			windowNames_.push_back(name);
-			/*cvNamedWindow(name, CV_WINDOW_AUTOSIZE);*/
-		}
-	}
-	// Destroy if have to
-	else if (size < numWindows) {
-		int i = size;
-		for (;i < numWindows; i++) {
-			cvDestroyWindow(windowNames_[i]);
-			printf("%s\n", windowNames_[i]);
-			delete[] windowNames_[i];
-		}
-		windowNames_.erase(windowNames_.begin()+size, windowNames_.end());
-	}
-}
-
-void VW_Marker::drawPictureOnSubwindows() {
-	if (aois_.size() != windowNames_.size()) {
-		fl_alert("Number of cropped areas does not match number on windows created.");
-		return;
-	}
-	for (unsigned i=0; i<aois_.size(); i++) {
-		cvShowImage(windowNames_[i], aois_[i]);
-	}
-}
-
-void VW_Marker::releaseAoiMemories()
-{
-	for (unsigned i=0; i<aois_.size(); i++) {
-		cvReleaseImage(&aois_[i]);
-	}
-	aois_.clear();
-}
-
 bool VW_Marker::nextRect() {
 	if (captureRects_.empty())
 		return false;
@@ -442,12 +389,6 @@ void VW_Marker::draw() {
 			else {
 				cloneAndDrawRects();
 				drawImageOnMainWindow(clone_);
-				if (showSubwindows_) {
-					aois_ = extractROIRects(currFrame_, captureRects_);
-					subwindowManage();
-					drawPictureOnSubwindows();
-					releaseAoiMemories();
-				}
 			}
 		} else if ((playStatus_ == PAUSE)) {
 			drawBlackScreen();
