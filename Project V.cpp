@@ -7,7 +7,6 @@
 #include "VideoPlayerUI.h"
 #include "Boundary.h"
 
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif

@@ -1,0 +1,46 @@
+﻿Build started 10/11/2012 5:51:40 PM.
+     1>Project "C:\Users\Khanh Nguyen\Dropbox\dev\projs\Project V\Project V\Project V.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "Release\Project V.unsuccessfulbuild".
+       ClCompile:
+         All outputs are up-to-date.
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\OpenCV2.4\Builds\install\include /I"C:\fltk-1.3.0" /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /D _AFXDLL /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"StdAfx.h" /Fp"Release\Project V.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\OpenCV2.4\Builds\install\include /I"C:\fltk-1.3.0" /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /D _AFXDLL /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Release\Project V.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt AOI_Processor.cpp Boundary.cpp CaptureRect.cpp ColorChooser.cpp MotionDetector.cpp "Project V.cpp" VideoPlayerUI.cxx VideoWindow.cpp VW_Marker.cpp
+         AOI_Processor.cpp
+         Boundary.cpp
+         CaptureRect.cpp
+         ColorChooser.cpp
+         MotionDetector.cpp
+         Project V.cpp
+         VideoPlayerUI.cxx
+         VideoWindow.cpp
+         VW_Marker.cpp
+       ResourceCompile:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _UNICODE /D UNICODE /D _AFXDLL /l"0x0409" /nologo /fo"Release\Project V.res" "Project V.rc" 
+       Link:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Khanh Nguyen\Dropbox\dev\projs\Project V\Release\Project V.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\OpenCV2.4\Builds\install\lib /LIBPATH:"C:\fltk-1.3.0\lib" opencv_calib3d242d.lib opencv_contrib242d.lib opencv_core242d.lib opencv_features2d242d.lib opencv_flann242d.lib opencv_gpu242d.lib opencv_highgui242d.lib opencv_imgproc242d.lib opencv_legacy242d.lib opencv_ml242d.lib opencv_nonfree242d.lib opencv_objdetect242d.lib opencv_photo242d.lib opencv_stitching242d.lib opencv_ts242d.lib opencv_video242d.lib opencv_videostab242d.lib fltkd.lib opengl32.lib glu32.lib fltkgld.lib /MANIFEST /ManifestFile:"Release\Project V.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Khanh Nguyen\Dropbox\dev\projs\Project V\Release\Project V.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Khanh Nguyen\Dropbox\dev\projs\Project V\Release\Project V.lib" /MACHINE:X86 "Release\Project V.res"
+         Release\AOI_Processor.obj
+         Release\Boundary.obj
+         Release\CaptureRect.obj
+         Release\ColorChooser.obj
+         Release\MotionDetector.obj
+         "Release\Project V.obj"
+         Release\stdafx.obj
+         Release\VideoPlayerUI.obj
+         Release\VideoWindow.obj
+         Release\VW_Marker.obj
+     1>LINK : warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library
+         Generating code
+         Finished generating code
+         Project V.vcxproj -> C:\Users\Khanh Nguyen\Dropbox\dev\projs\Project V\Release\Project V.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Users\Khanh Nguyen\Dropbox\dev\projs\Project V\Release\Project V.exe;#1" /manifest "Release\Project V.exe.intermediate.manifest" "c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\Include\Manifest\dpiaware.manifest"
+       FinalizeBuildStatus:
+         Deleting file "Release\Project V.unsuccessfulbuild".
+         Touching "Release\Project V.lastbuildstate".
+     1>Done Building Project "C:\Users\Khanh Nguyen\Dropbox\dev\projs\Project V\Project V\Project V.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:09.91

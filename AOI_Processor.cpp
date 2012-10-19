@@ -22,7 +22,7 @@ void AOI_ProcessorWindow::subwindowManage(int num) {
 			name = new char[128];
 			sprintf(name, "Window %05d", i);
 			windowNames_.push_back(name);
-			/*cvNamedWindow(name, CV_WINDOW_AUTOSIZE);*/
+			cvNamedWindow(name, CV_WINDOW_AUTOSIZE);
 		}
 	}
 	// Destroy if have to
@@ -120,7 +120,7 @@ void AOI_ProcessorWindow::trackMotionAndIllustrate(vector<IplImage*> src, vector
 {
 	motionDetectorManage(src.size());
 	for (unsigned i=0; i<src.size(); i++) {
-		IplImage *img = motionDetectors_[i]->processPicture(src[i]);
+		IplImage *img = motionDetectors_[i]->processImage(src[i]);
 		dst.push_back(img);
 	}
 }

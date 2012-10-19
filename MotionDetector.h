@@ -13,27 +13,65 @@
 
 using namespace std;
 
+enum {SIMPLE, BKGD_AVE};
+
 class MotionDetector
 {
 protected:
+	int methodCode_;
 	CvSize imgSize_;
-	IplImage* greyImage_;
-	IplImage* colourImage_;
-	IplImage* movingAverage_;
-	IplImage* difference_;
-	IplImage* temp_;
-	IplImage* motionHistory_;
+	bool first_;
+
+// Simple method
+//
+// 
+protected:
+	IplImage* sGreyImage_;
+	IplImage* sMovingAverage_;
+	IplImage* sDifference_;
+	IplImage* sTemp_;
 
 	// Parameters
 	double alpha_;
+	unsigned thresvalue_;
+	unsigned dilateIterations_;
+	unsigned erodeIterations_;
 
 	int prevX_;
 	int numObj_;
-	bool first_;
+
+	IplImage* sBackGroudDiff(IplImage *frame);
+	IplImage* sProcessImage(IplImage *frame);
+
+// Background Average
+//
+// 
+protected:
+	double count_;
+	double upperScale_, lowerScale_;
+	//Float, 3-channel images
+	IplImage *total_, *totalDiff_, *mean_, *deviation_, *prev_, *hi_, *low_;
+	IplImage *temp1_, *temp2_;
+
+	//Float, 1-channel images
+	IplImage *gray1_, *gray2_, *gray3_;
+	IplImage *low1_, *low2_, *low3_;
+	IplImage *hi1_, *hi2_, *hi3_;
+
+	//Unsigned, 1-channel images
+	IplImage *mask1_, *mask2_;
+
+	void accumulateBackground(IplImage *frame);
+	void createModelsFromStats();
+	void setThreshold();
+	void backGroundDiff(IplImage *frame);
+
+//
+//
+	CvSeq* findContours(IplImage *singleChannelPic);
 public:
 	MotionDetector(CvSize imgSize);
 	virtual ~MotionDetector(void);
 
-	IplImage* processPicture(IplImage* frame);
+	IplImage* processImage(IplImage* frame);
 };
-
