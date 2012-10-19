@@ -275,6 +275,7 @@ void VideoPlayerUI::cb_slider(Fl_Slider* obj, void* v) {
 
 void VideoPlayerUI::cb_openFile_i(Fl_Button* obj, void* v) {
 	this->aoiProcessorWindow->stop();
+	this->aoiProcessorWindow->deleteAllRect();
 	this->aoiProcessorWindow->initiateVideo(this->filePathInput_->value());
 	this->aoiProcessorWindow->play();
 }

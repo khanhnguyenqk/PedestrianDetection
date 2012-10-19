@@ -51,6 +51,7 @@ public:
 	string getSaveDirectory(const char* fileName);
 	bool setDrawStatus(int status);
 	bool deleteCurrentRect();
+	bool deleteAllRect();
 	bool cloneAndDrawRects();
 	bool nextRect();
 	bool prevRect();
@@ -62,4 +63,3 @@ public:
 };
 
 #endif
-

@@ -41,12 +41,12 @@ protected:
 	int numObj_;
 
 	IplImage* sBackGroudDiff(IplImage *frame);
-	IplImage* sProcessImage(IplImage *frame);
 
 // Background Average
 //
 // 
 protected:
+	int bkgdAccCircle_, circleCount_;
 	double count_;
 	double upperScale_, lowerScale_;
 	//Float, 3-channel images
@@ -61,11 +61,11 @@ protected:
 	//Unsigned, 1-channel images
 	IplImage *mask1_, *mask2_;
 
-	void accumulateBackground(IplImage *frame);
-	void createModelsFromStats();
-	void setThreshold();
-	void backGroundDiff(IplImage *frame);
-
+	void ba_accumulateBackground(IplImage *frame);
+	void ba_createModelsFromStats();
+	void ba_setThreshold();
+	void ba_backGroundDiff(IplImage *frame);
+	IplImage* ba_wrapper(IplImage *frame);
 //
 //
 	CvSeq* findContours(IplImage *singleChannelPic);

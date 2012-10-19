@@ -4,7 +4,7 @@
 
 MotionDetector::MotionDetector(CvSize imgSize)
 {
-	methodCode_ = SIMPLE;
+	methodCode_ = 1;
 	first_ = true;
 	//
 	// Simple method
@@ -18,15 +18,20 @@ MotionDetector::MotionDetector(CvSize imgSize)
 	// Parameters
 	alpha_ = 0.020;
 	thresvalue_ = 50;
-	dilateIterations_ = 18;
+	dilateIterations_ = 12;
 	erodeIterations_ = 10;
 
 	//
 	// Background average
 	// 
+	// 
+	bkgdAccCircle_ = 25;
+	circleCount_ = 0;
 	count_ = 0.00001;	// Protect against divide by zero
-	upperScale_ = 7.0; lowerScale_ = 6.0;
+	upperScale_ = 15.0; lowerScale_ = 15.0;
 
+	total_ = cvCreateImage( imgSize, IPL_DEPTH_32F, 3 );
+	totalDiff_ = cvCreateImage( imgSize, IPL_DEPTH_32F, 3 );
 	mean_ = cvCreateImage( imgSize, IPL_DEPTH_32F, 3 );
 	deviation_ = cvCreateImage( imgSize, IPL_DEPTH_32F, 3 );
 	prev_ = cvCreateImage( imgSize, IPL_DEPTH_32F, 3 );
@@ -47,7 +52,12 @@ MotionDetector::MotionDetector(CvSize imgSize)
 
 	mask1_ = cvCreateImage( imgSize, IPL_DEPTH_8U, 1 );
 	mask2_ = cvCreateImage( imgSize, IPL_DEPTH_8U, 1 );
+
+	// while learning background, return a black mask
+	cvZero(mask1_);
 	
+	cvZero(total_);
+	cvZero(totalDiff_);
 	cvZero( mean_ );
 	cvZero( deviation_ );
 	cvZero( prev_ );
@@ -67,45 +77,23 @@ MotionDetector::~MotionDetector(void)
 }
 
 IplImage* MotionDetector::processImage(IplImage* frame) {
-	if (methodCode_ == SIMPLE) {
-		return sProcessImage(frame);
+	IplImage* diff;
+	switch (methodCode_) {
+	case SIMPLE:
+		diff = sBackGroudDiff(frame); break;
+	case BKGD_AVE:
+		diff = ba_wrapper(frame); break;
 	}
-}
-
-IplImage* MotionDetector::sBackGroudDiff(IplImage *frame) {
-	/*if (sColorImage_ != NULL)
-	cvReleaseImage(&sColorImage_);
-	sColorImage_ = cvCloneImage(frame);*/
-
-	if(first_)
-	{
-		sDifference_ = cvCloneImage(frame);
-		sTemp_ = cvCloneImage(frame);
-		cvConvertScale(frame, sMovingAverage_, 1.0, 0.0);
-		first_ = false;
-	} else {
-		cvRunningAvg(frame, sMovingAverage_, alpha_, NULL);
-	}
-
-	cvConvertScale(sMovingAverage_,sTemp_, 1.0, 0.0);
-	cvAbsDiff(frame,sTemp_,sDifference_);
-	cvCvtColor(sDifference_,sGreyImage_,CV_RGB2GRAY);
-
-	cvThreshold(sGreyImage_, sGreyImage_, thresvalue_, 255, CV_THRESH_BINARY);
-	return sGreyImage_;
-}
-
-IplImage* MotionDetector::sProcessImage(IplImage *frame) {
-	IplImage* diff = sBackGroudDiff(frame);
+	
 	//cvAdaptiveThreshold(sGreyImage_, sGreyImage_, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV);
 	//Dilate and erode to get object blobs
-	cvDilate(sGreyImage_, sGreyImage_, 0, dilateIterations_);
-	cvErode(sGreyImage_, sGreyImage_, 0, erodeIterations_);
+	cvDilate(diff, diff, 0, dilateIterations_);
+	cvErode(diff, diff, 0, erodeIterations_);
 
 	//Find the contours of the moving images in the frame.
 	CvMemStorage* storage = cvCreateMemStorage(0);
 	CvSeq* contour = 0;
-	cvFindContours( sGreyImage_, storage, &contour, sizeof(CvContour), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
+	cvFindContours( diff, storage, &contour, sizeof(CvContour), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
 
 	for( ; contour != 0; contour = contour->h_next )
 	{
@@ -191,11 +179,26 @@ IplImage* MotionDetector::sProcessImage(IplImage *frame) {
 	return ret;
 }
 
-CvSeq* MotionDetector::findContours(IplImage *singleChannelPic) { 
-	return NULL;
+IplImage* MotionDetector::sBackGroudDiff(IplImage *frame) {
+	if(first_)
+	{
+		sDifference_ = cvCloneImage(frame);
+		sTemp_ = cvCloneImage(frame);
+		cvConvertScale(frame, sMovingAverage_, 1.0, 0.0);
+		first_ = false;
+	} else {
+		cvRunningAvg(frame, sMovingAverage_, alpha_, NULL);
+	}
+
+	cvConvertScale(sMovingAverage_,sTemp_, 1.0, 0.0);
+	cvAbsDiff(frame,sTemp_,sDifference_);
+	cvCvtColor(sDifference_,sGreyImage_,CV_RGB2GRAY);
+
+	cvThreshold(sGreyImage_, sGreyImage_, thresvalue_, 255, CV_THRESH_BINARY);
+	return sGreyImage_;
 }
 
-void MotionDetector::accumulateBackground(IplImage *frame) {
+void MotionDetector::ba_accumulateBackground(IplImage *frame) {
 	cvCvtScale(frame, temp1_, 1, 0);
 	if (first_) {
 		first_ = false;
@@ -208,17 +211,17 @@ void MotionDetector::accumulateBackground(IplImage *frame) {
 	cvCopy(temp1_, prev_);
 }
 
-void MotionDetector::createModelsFromStats() {
+void MotionDetector::ba_createModelsFromStats() {
 	cvConvertScale(total_, mean_, 1.0/count_);
 	cvConvertScale(totalDiff_, deviation_, 1.0/count_);
 
 	//Make sure deviation is always something
 	//
 	cvAddS(deviation_, cvScalar(1, 1, 1), deviation_);
-	setThreshold();
+	ba_setThreshold();
 }
 
-void MotionDetector::setThreshold() {
+void MotionDetector::ba_setThreshold() {
 	// Upper threshold
 	cvConvertScale(deviation_, temp1_, upperScale_);
 	cvAdd(temp1_, mean_, hi_);
@@ -228,9 +231,16 @@ void MotionDetector::setThreshold() {
 	cvConvertScale(deviation_, temp1_, lowerScale_);
 	cvSub(mean_, temp1_, low_);
 	cvSplit(low_, low1_, low2_, low3_, NULL);
+
+	IplImage* hi = cvCreateImage(cvSize(total_->width, total_->height), IPL_DEPTH_8U, 3);
+	IplImage* low = cvCreateImage(cvSize(total_->width, total_->height), IPL_DEPTH_8U, 3);
+	cvConvertScale(hi_, hi, 1, 0);
+	cvConvertScale(low_, low, 1, 0);
+	cvShowImage("Hi", hi);
+	cvShowImage("Low", low);
 }
 
-void MotionDetector::backGroundDiff(IplImage *frame) {
+void MotionDetector::ba_backGroundDiff(IplImage *frame) {
 	cvCvtScale(frame, temp1_, 1, 0);
 	cvSplit(temp1_, gray1_, gray2_, gray3_, NULL);
 
@@ -243,4 +253,21 @@ void MotionDetector::backGroundDiff(IplImage *frame) {
 	cvOr(mask1_, mask2_, mask1_);
 
 	cvSubRS(mask1_, cvScalar(255), mask1_);
+
+	IplImage* diff = cvCreateImage(cvSize(mask1_->width, mask1_->height), IPL_DEPTH_8U, 1);
+	cvConvertScale(mask1_, diff, 1, 0);
+	cvShowImage("Diff", diff);
+}
+
+IplImage* MotionDetector::ba_wrapper(IplImage *frame) {
+	if (circleCount_ < bkgdAccCircle_) {
+		ba_accumulateBackground(frame);
+		circleCount_++;
+	} else if (circleCount_ == bkgdAccCircle_) {
+		ba_createModelsFromStats();
+		ba_backGroundDiff(frame);
+	} else {
+		ba_backGroundDiff(frame);
+	}
+	return mask1_;
 }

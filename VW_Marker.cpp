@@ -85,7 +85,6 @@ int VW_Marker::mouseDrawingRectHandle(int event) {
 	int x = getRelativeMouseX(Fl::event_x());
 	int y = getRelativeMouseY(Fl::event_y());
 	CaptureRect cr;
-	/*printf("x: %d | X: %d\ty: %d | Y: %d\n", x, y, this->x(), this->y());*/
 	switch (event) {
 
 	case FL_PUSH:
@@ -118,7 +117,6 @@ int VW_Marker::mouseMovingRectHandle(int event) {
 	int y = getRelativeMouseY(Fl::event_y());
 	CvPoint mousePoint = cvPoint(x, y);
 	CvPoint vector;
-	/*printf("x: %d | X: %d\ty: %d | Y: %d\n", x, y, this->x(), this->y());*/
 	switch (event) {
 
 	case FL_PUSH:
@@ -127,8 +125,6 @@ int VW_Marker::mouseMovingRectHandle(int event) {
 		cloneAndDrawRects();
 		return 1;
 	case FL_DRAG:
-		/*vector.x = x - lastMousePoint_.x;
-		vector.y = y - lastMousePoint_.y;*/
 		vector = subVectors(mousePoint, lastMousePoint_);
 		currentRect_->move(vector);
 		lastMousePoint_ = mousePoint;
@@ -152,7 +148,6 @@ int VW_Marker::mouseResizeRectHandle(int event) {
 	CvPoint mousePoint = cvPoint(x, y);
 	CvPoint vector = subVectors(mousePoint, lastMousePoint_);
 	CvPoint v_a, v_b;
-	/*printf("x: %d | X: %d\ty: %d | Y: %d\n", x, y, this->x(), this->y());*/
 	switch (event) {
 
 	case FL_PUSH:
@@ -284,6 +279,14 @@ bool VW_Marker::deleteCurrentRect() {
 	return true;
 }
 
+bool VW_Marker::deleteAllRect() {
+	if (captureRects_.empty())
+		return true;
+	captureRects_.clear();
+	currentRect_ = captureRects_.begin();
+	return true;
+}
+
 bool VW_Marker::cloneAndDrawRects() {
 	if (currFrame_ == NULL)
 		return false;
@@ -311,8 +314,6 @@ int VW_Marker::getRelativeMouseX(int x) {
 	ox=xPanRatio_*(1.0+zoomRatio_); x1=ox-zoomRatio_; x1=(x1+1)/2;
 	double ret = (((double)x - x1*this->w())*
 		(currFrame_->width)/(this->w()))/zoomRatio_;
-	/*int ret = (int)(((double)x - (1-zoomRatio_)*this->w()/2 - xPanRatio_*(this->w()))*
-				(currFrame_->width)/(this->w()))/zoomRatio_;*/
 	return (int)ret;
 }
 
@@ -321,8 +322,6 @@ int VW_Marker::getRelativeMouseY(int y) {
 	oy=-yPanRatio_*(1.0+zoomRatio_); y1=oy+zoomRatio_; y1=(-y1+1)/2;
 	double ret = (((double)y - y1*this->h())*
 		(currFrame_->height)/(this->h()))/zoomRatio_;
-	/*int ret = (int)(((double)y - (1-zoomRatio_)*this->h()/2 - yPanRatio_*(this->h()))*
-	(currFrame_->height)/(this->h()))/zoomRatio_;*/
 	return (int)ret;
 }
 
@@ -406,7 +405,6 @@ void VW_Marker::draw() {
 			}
 		} else if (playStatus_ == STOP)
 			drawBlackScreen();
-		/*printf("%f\n", playSpeed_);*/
 	}
 	updateDependences();
 }
