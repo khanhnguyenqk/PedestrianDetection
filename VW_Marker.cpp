@@ -147,7 +147,7 @@ int VW_Marker::mouseResizeRectHandle(int event) {
 	int y = getRelativeMouseY(Fl::event_y());
 	CvPoint mousePoint = cvPoint(x, y);
 	CvPoint vector = subVectors(mousePoint, lastMousePoint_);
-	CvPoint v_a, v_b;
+	
 	switch (event) {
 
 	case FL_PUSH:
@@ -156,26 +156,7 @@ int VW_Marker::mouseResizeRectHandle(int event) {
 		cloneAndDrawRects();
 		return 1;
 	case FL_DRAG:
-		switch (drawStatus_) {
-		case RESIZE_BR:
-			currentRect_->resizeAddVector(vector);
-			break;
-		case RESIZE_TL:
-			currentRect_->move(vector);
-			vector = mulVector(vector, -1);
-			currentRect_->resizeAddVector(vector);
-			break;
-		case RESIZE_TR:
-			v_a = cvPoint(0, vector.y); v_b = cvPoint(vector.x, -vector.y);
-			currentRect_->move(v_a); currentRect_->resizeAddVector(v_b);
-			break;
-		case RESIZE_BL:
-			v_a = cvPoint(vector.x, 0); v_b = cvPoint(-vector.x, vector.y);
-			currentRect_->move(v_a); currentRect_->resizeAddVector(v_b);
-			break;
-		default:
-			throw "Exception here, change to something meaningful please!";
-		}
+		currentRect_->moveCorner(drawStatus_, vector);
 		
 		lastMousePoint_ = mousePoint;
 		cloneAndDrawRects();

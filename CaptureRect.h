@@ -37,6 +37,7 @@ public:
 	void returnOriginalColor();
 	void fixNegativeWH();
 	bool contains(CvPoint p);
+	void moveCorner(int drawMethod, CvPoint vector);
 
 	int actionController(CvPoint mousePointer);
 };

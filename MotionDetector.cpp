@@ -4,7 +4,7 @@
 
 MotionDetector::MotionDetector(CvSize imgSize)
 {
-	methodCode_ = 1;
+	methodCode_ = 0;
 	first_ = true;
 	//
 	// Simple method
@@ -18,7 +18,7 @@ MotionDetector::MotionDetector(CvSize imgSize)
 	// Parameters
 	alpha_ = 0.020;
 	thresvalue_ = 50;
-	dilateIterations_ = 12;
+	dilateIterations_ = 16;
 	erodeIterations_ = 10;
 
 	//
@@ -238,6 +238,8 @@ void MotionDetector::ba_setThreshold() {
 	cvConvertScale(low_, low, 1, 0);
 	cvShowImage("Hi", hi);
 	cvShowImage("Low", low);
+	cvReleaseImage(&hi);
+	cvReleaseImage(&low);
 }
 
 void MotionDetector::ba_backGroundDiff(IplImage *frame) {
@@ -257,6 +259,7 @@ void MotionDetector::ba_backGroundDiff(IplImage *frame) {
 	IplImage* diff = cvCreateImage(cvSize(mask1_->width, mask1_->height), IPL_DEPTH_8U, 1);
 	cvConvertScale(mask1_, diff, 1, 0);
 	cvShowImage("Diff", diff);
+	cvReleaseImage(&diff);
 }
 
 IplImage* MotionDetector::ba_wrapper(IplImage *frame) {

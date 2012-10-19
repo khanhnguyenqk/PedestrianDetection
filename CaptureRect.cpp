@@ -124,3 +124,27 @@ int CaptureRect::actionController(CvPoint mousePointer) {
 	else
 		return -1;
 }
+
+void CaptureRect::moveCorner(int drawMethod, CvPoint vector) {
+	CvPoint v_x, v_y;
+	switch (drawMethod) {
+	case RESIZE_BR:
+		this->resizeAddVector(vector);
+		break;
+	case RESIZE_TL:
+		this->move(vector);
+		vector = mulVector(vector, -1);
+		this->resizeAddVector(vector);
+		break;
+	case RESIZE_TR:
+		v_x = cvPoint(0, vector.y); v_y = cvPoint(vector.x, -vector.y);
+		this->move(v_x); this->resizeAddVector(v_y);
+		break;
+	case RESIZE_BL:
+		v_x = cvPoint(vector.x, 0); v_y = cvPoint(-vector.x, vector.y);
+		this->move(v_x); this->resizeAddVector(v_y);
+		break;
+	default:
+		throw "Exception here, change to something meaningful please!";
+	}
+}
