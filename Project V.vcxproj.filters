@@ -57,6 +57,9 @@
     <ClInclude Include="AOI_Processor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CaptureTrapezium.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -87,6 +90,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AOI_Processor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CaptureTrapezium.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

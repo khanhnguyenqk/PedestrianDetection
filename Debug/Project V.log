@@ -1,11 +1,11 @@
-﻿Build started 10/19/2012 1:10:48 PM.
+﻿Build started 10/19/2012 10:02:10 PM.
      1>Project "C:\Users\Khanh Nguyen\Dropbox\dev\projs\Project V\Project V\Project V.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\Project V.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          All outputs are up-to-date.
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\OpenCV2.4\Builds\install\include /I"C:\fltk-1.3.0" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\Project V.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt MotionDetector.cpp
-         MotionDetector.cpp
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\eigen311 /IC:\OpenCV2.4\Builds\install\include /I"C:\fltk-1.3.0" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\Project V.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt CaptureTrapezium.cpp
+         CaptureTrapezium.cpp
        ResourceCompile:
          All outputs are up-to-date.
        ManifestResourceCompile:
@@ -16,6 +16,7 @@
          Debug\AOI_Processor.obj
          Debug\Boundary.obj
          Debug\CaptureRect.obj
+         Debug\CaptureTrapezium.obj
          Debug\ColorChooser.obj
          Debug\MotionDetector.obj
          "Debug\Project V.obj"
@@ -36,4 +37,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.49
+Time Elapsed 00:00:02.74

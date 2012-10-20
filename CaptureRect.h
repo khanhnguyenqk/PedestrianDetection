@@ -3,11 +3,12 @@
 
 #include <opencv2/opencv.hpp>
 
-enum {NEW_RECT, MOVE_RECT, RESIZE_TL, RESIZE_TR, RESIZE_BR, RESIZE_BL};
+enum DrawAction {NEW_RECT, MOVE_RECT, RESIZE_TL, RESIZE_TR, RESIZE_BR, RESIZE_BL};
 
 class CaptureRect
 {
 protected:
+	// Area percentage of the corner compared to the total area
 	double cornerPercentage_;
 	CvRect rect_;
 	CvScalar color_;
@@ -39,7 +40,7 @@ public:
 	bool contains(CvPoint p);
 	void moveCorner(int drawMethod, CvPoint vector);
 
-	int actionController(CvPoint mousePointer);
+	virtual int actionController(CvPoint mousePointer);
 };
 
 

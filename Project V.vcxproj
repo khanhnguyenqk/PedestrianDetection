@@ -35,6 +35,7 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="OpenCV_Debug.props" />
+    <Import Project="Eigen Debug.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -82,6 +83,7 @@
     <ClInclude Include="AOI_Processor.h" />
     <ClInclude Include="Boundary.h" />
     <ClInclude Include="CaptureRect.h" />
+    <ClInclude Include="CaptureTrapezium.h" />
     <ClInclude Include="ColorChooser.h" />
     <ClInclude Include="CvPoint_Wrapper.h" />
     <ClInclude Include="MotionDetector.h" />
@@ -97,6 +99,7 @@
     <ClCompile Include="AOI_Processor.cpp" />
     <ClCompile Include="Boundary.cpp" />
     <ClCompile Include="CaptureRect.cpp" />
+    <ClCompile Include="CaptureTrapezium.cpp" />
     <ClCompile Include="ColorChooser.cpp" />
     <ClCompile Include="MotionDetector.cpp" />
     <ClCompile Include="Project V.cpp" />
