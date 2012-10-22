@@ -54,6 +54,7 @@ int VW_Marker::handle(int event) {
 				case RESIZE_TL:
 				case RESIZE_TR:
 				case RESIZE_BL:
+				case P1: case P2: case P3: case P4:
 					r = mouseResizeRectHandle(event);
 					break;
 				default:
@@ -75,6 +76,19 @@ void VW_Marker::drawRect(IplImage* img,  CaptureRect cr) {
 		cr.getColor(), cr.getThickness());
 }
 
+void VW_Marker::drawRect(IplImage* img, CaptureTrapezium ct) {
+	int lineType = 20;
+	CvScalar color = ct.getColor();
+	int thickness = ct.getThickness();
+	cvRectangle(img, cvPoint(ct.getRect().x, ct.getRect().y),
+		cvPoint(ct.getRect().x+ct.getRect().width, ct.getRect().y+ct.getRect().height), 
+		color, thickness);
+	cvLine(img, fromCvPoint2D32f(ct.getP1()), fromCvPoint2D32f(ct.getP2()), color, thickness, lineType);
+	cvLine(img, fromCvPoint2D32f(ct.getP2()), fromCvPoint2D32f(ct.getP3()), color, thickness, lineType);
+	cvLine(img, fromCvPoint2D32f(ct.getP3()), fromCvPoint2D32f(ct.getP4()), color, thickness, lineType);
+	cvLine(img, fromCvPoint2D32f(ct.getP4()), fromCvPoint2D32f(ct.getP1()), color, thickness, lineType);
+}
+
 void VW_Marker::drawAllRects(IplImage* img) {
 	CR_Iterator it = captureRects_.begin();
 	for (;it != captureRects_.end(); it++)
@@ -84,7 +98,7 @@ void VW_Marker::drawAllRects(IplImage* img) {
 int VW_Marker::mouseDrawingRectHandle(int event) {
 	int x = getRelativeMouseX(Fl::event_x());
 	int y = getRelativeMouseY(Fl::event_y());
-	CaptureRect cr;
+	CaptureTrapezium cr;
 	switch (event) {
 
 	case FL_PUSH:
@@ -103,6 +117,7 @@ int VW_Marker::mouseDrawingRectHandle(int event) {
 		return 1;
 	case FL_RELEASE:
 		currentRect_->fixNegativeWH();
+		currentRect_->finishCreating();
 		cloneAndDrawRects();
 		this->redraw();
 		drawStatus_ = -1;
@@ -344,7 +359,7 @@ bool VW_Marker::saveScreen() {
 	return true;
 }
 
-vector<IplImage*> VW_Marker::extractROIRects(IplImage *image, vector<CaptureRect> rects) {
+vector<IplImage*> VW_Marker::extractROIRects(IplImage *image, vector<CaptureTrapezium> rects) {
 	vector<IplImage*> ret;
 	int s = rects.size();
 

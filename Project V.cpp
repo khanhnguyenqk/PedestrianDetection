@@ -5,13 +5,14 @@
 #include "Project V.h"
 
 #include "VideoPlayerUI.h"
-#include "Boundary.h"
+#include <Eigen/Dense>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 using namespace std;
+using namespace Eigen;
 
 int main(int argc, char** argv) {
 	Fl::visual(FL_RGB);

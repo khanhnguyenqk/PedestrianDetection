@@ -4,7 +4,7 @@
 
 CaptureRect::CaptureRect(void)
 {
-	cornerPercentage_ = 0.0025;
+	cornerAreaPercentage_ = 0.0025;
 	rect_ = cvRect(0, 0, 0, 0);
 	color_ = cvScalar(0.0, 255.0, 0.0);
 	colorOrg_ = NULL;
@@ -96,7 +96,7 @@ void CaptureRect::move(CvPoint vector) {
 
 int CaptureRect::actionController(CvPoint mousePointer) {
 	if (this->contains(mousePointer)) {
-		double sqrtP = sqrt(cornerPercentage_);
+		double sqrtP = sqrt(cornerAreaPercentage_);
 		CvPoint tl = cvPoint(rect_.x,rect_.y);
 		CvPoint tr = cvPoint(rect_.x+rect_.width,rect_.y);
 		CvPoint sizeVector = cvPoint(rect_.width, rect_.height);

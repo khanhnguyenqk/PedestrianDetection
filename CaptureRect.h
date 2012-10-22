@@ -9,7 +9,7 @@ class CaptureRect
 {
 protected:
 	// Area percentage of the corner compared to the total area
-	double cornerPercentage_;
+	double cornerAreaPercentage_;
 	CvRect rect_;
 	CvScalar color_;
 	CvScalar* colorOrg_;
@@ -31,14 +31,15 @@ public:
 	int getThickness();
 
 	// Mutators
-	void resize(int w, int h);
-	void resizeAddVector(CvPoint vector);
-	void move(CvPoint vector);
 	void darkenColor();
 	void returnOriginalColor();
+
+	void resize(int w, int h);
+	void resizeAddVector(CvPoint vector);
+	virtual void move(CvPoint vector);
 	void fixNegativeWH();
 	bool contains(CvPoint p);
-	void moveCorner(int drawMethod, CvPoint vector);
+	virtual void moveCorner(int drawMethod, CvPoint vector);
 
 	virtual int actionController(CvPoint mousePointer);
 };

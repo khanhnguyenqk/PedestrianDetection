@@ -3,21 +3,21 @@
 
 #include <vector>
 #include "videowindow.h"
-#include "CaptureRect.h"
+#include "CaptureTrapezium.h"
 #include "ColorChooser.h"
 #include "MotionDetector.h"
 
 using namespace std;
 
-typedef vector<CaptureRect>::iterator CR_Iterator;
+typedef vector<CaptureTrapezium>::iterator CR_Iterator;
 
 class VW_Marker :
 	public VideoWindow
 {
 protected:
 	bool cloneDone_;
-	CaptureRect cr_;
-	vector<CaptureRect> captureRects_;
+	CaptureTrapezium cr_;
+	vector<CaptureTrapezium> captureRects_;
 	CR_Iterator currentRect_;
 	int drawStatus_;
 	bool drawnOrChanged_;
@@ -36,10 +36,12 @@ public:
 // Draw rect
 protected:
 	void drawRect(IplImage* img, CaptureRect cr);
+	void drawRect(IplImage* img, CaptureTrapezium ct);
 	void drawAllRects(IplImage* img);
 	int mouseDrawingRectHandle(int event);
 	int mouseMovingRectHandle(int event);
 	int mouseResizeRectHandle(int event);
+	int mouseResizeTrapezium(int event);
 	void chooseDrawAction(int xMouse, int yMouse);
 	void saveMarkedImage(IplImage* image);
 	void darkenNonCurrent();
@@ -56,7 +58,7 @@ public:
 	bool nextRect();
 	bool prevRect();
 	bool saveScreen();
-	vector<IplImage*> extractROIRects(IplImage *image, vector<CaptureRect> rects);
+	vector<IplImage*> extractROIRects(IplImage *image, vector<CaptureTrapezium> rects);
 
 // Play control extend
 	virtual void draw();
