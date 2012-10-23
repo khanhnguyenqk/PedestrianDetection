@@ -43,7 +43,6 @@ protected:
 	int mouseResizeRectHandle(int event);
 	int mouseResizeTrapezium(int event);
 	void chooseDrawAction(int xMouse, int yMouse);
-	void saveMarkedImage(IplImage* image);
 	void darkenNonCurrent();
 	int getRelativeMouseX(int x);
 	int getRelativeMouseY(int y);
@@ -57,8 +56,6 @@ public:
 	bool cloneAndDrawRects();
 	bool nextRect();
 	bool prevRect();
-	bool saveScreen();
-	vector<IplImage*> extractROIRects(IplImage *image, vector<CaptureTrapezium> rects);
 
 // Play control extend
 	virtual void draw();

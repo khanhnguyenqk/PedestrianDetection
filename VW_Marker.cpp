@@ -25,10 +25,7 @@ int VW_Marker::handle(int event) {
 		if (Fl::event_button() == FL_RIGHT_MOUSE) {
 			showNextFrame();
 			return 1;
-		} else if (Fl::event_button() == FL_MIDDLE_MOUSE) {
-			saveScreen();
-			return 1;
-		}else if (Fl::event_button() == FL_LEFT_MOUSE) {
+		} else if (Fl::event_button() == FL_LEFT_MOUSE) {
 			x = getRelativeMouseX(Fl::event_x());
 			y = getRelativeMouseY(Fl::event_y());
 			chooseDrawAction(x, y);
@@ -212,44 +209,6 @@ void VW_Marker::chooseDrawAction(int xMouse, int yMouse) {
 		drawStatus_ = NEW_RECT;
 }
 
-void VW_Marker::saveMarkedImage(IplImage* image) {
-	string directoryName = VW_Marker::getSaveDirectory(videoName_);
-	printf("%s", directoryName.c_str());
-	bool diretoryExists = false;
-
-	struct stat st;
-	if (stat(directoryName.c_str(), &st) == 0)
-		diretoryExists = true;
-	else
-	{
-		int mkdirResult = _mkdir(directoryName.c_str());
-		if (mkdirResult == 0)
-			diretoryExists = true;
-		else
-		{
-			char errMsg[256];
-			sprintf(errMsg, "The directory creation failed with error: %d. Cannot save image\n", mkdirResult);
-			fl_alert(errMsg);
-		}
-	}
-
-	if (diretoryExists) {
-		int frameNum = (int)cvGetCaptureProperty(videoCapture_, CV_CAP_PROP_POS_FRAMES);
-		char filePath[512];
-		sprintf(filePath, "%s\\%010d.jpg", directoryName.c_str(), frameNum);
-		cvSaveImage(filePath, image);
-		// Save rects areas
-		vector<IplImage*> aois = extractROIRects(currFrame_, captureRects_);
-		for (unsigned i=0; i<aois.size(); i++)
-		{
-			sprintf(filePath, "%s\\%010d_%05d.jpg", directoryName.c_str(), frameNum, i);
-			cvSaveImage(filePath, aois[i]);
-			cvReleaseImage(&aois[i]);
-		}
-		aois.clear();
-	}
-}
-
 string VW_Marker::getSaveDirectory(const char* fileName) {
 	int pos;
 	string ret = string(fileName);
@@ -339,39 +298,6 @@ bool VW_Marker::prevRect() {
 	return true;
 }
 
-bool VW_Marker::saveScreen() {
-	if ((clone_ == NULL) && (currFrame_ == NULL))
-		return false;
-	if (playStatus_==PAUSE) {
-		if (clone_)
-			saveMarkedImage(clone_);
-		else
-			return false;
-	}
-	else if (playStatus_==PLAY) {
-		if (currFrame_)
-			saveMarkedImage(currFrame_);
-		else
-			return false;
-	}
-	else
-		return false;
-	return true;
-}
-
-vector<IplImage*> VW_Marker::extractROIRects(IplImage *image, vector<CaptureTrapezium> rects) {
-	vector<IplImage*> ret;
-	int s = rects.size();
-
-	for (int i = 0; i<s; i++) {
-		cvSetImageROI(image, rects[i].getRect());
-		ret.push_back(cvCreateImage(cvGetSize(image), image->depth, image->nChannels));
-		cvCopy(image, ret[i], NULL);
-		cvResetImageROI(image);
-	}
-
-	return ret;
-}
 
 void VW_Marker::draw() {
 	if (videoInitiated_) {

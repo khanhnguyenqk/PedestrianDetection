@@ -26,4 +26,14 @@ public:
 	}
 	virtual ~AOI_ProcessorWindow(void);
 	virtual void draw();
+
+	void saveMarkedImage(IplImage* image);
+	bool saveScreen();
+	vector<IplImage*> extractROIRects(IplImage *image, vector<CaptureRect> rs);
+	vector<IplImage*> extractROIRects(IplImage *image, vector<CaptureTrapezium> trs);
+	virtual int handle(int event);
+
+// Utilities
+public:
+	static void setElements(IplImage **image, CvPoint from, CvPoint to, uchar v);
 };

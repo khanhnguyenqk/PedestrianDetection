@@ -86,6 +86,7 @@
     <ClInclude Include="CaptureTrapezium.h" />
     <ClInclude Include="ColorChooser.h" />
     <ClInclude Include="CvPoint_Wrapper.h" />
+    <ClInclude Include="LinearAlgebra.h" />
     <ClInclude Include="MotionDetector.h" />
     <ClInclude Include="Project V.h" />
     <ClInclude Include="Resource.h" />
@@ -101,6 +102,7 @@
     <ClCompile Include="CaptureRect.cpp" />
     <ClCompile Include="CaptureTrapezium.cpp" />
     <ClCompile Include="ColorChooser.cpp" />
+    <ClCompile Include="LinearAlgebra.cpp" />
     <ClCompile Include="MotionDetector.cpp" />
     <ClCompile Include="Project V.cpp" />
     <ClCompile Include="stdafx.cpp">
