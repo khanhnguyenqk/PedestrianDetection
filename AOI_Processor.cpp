@@ -6,6 +6,8 @@
 #include <direct.h>
 #include <sys/stat.h>
 #include "AOI_Processor.h"
+#include "CvPoint_Wrapper.h"
+#include "LinearAlgebra.h"
 
 AOI_ProcessorWindow::~AOI_ProcessorWindow(void)
 {
@@ -100,7 +102,7 @@ void AOI_ProcessorWindow::draw() {
 				drawImageOnMainWindow(clone_);
 				if (showSubwindows_) {
 					vector<IplImage*> motionTracked;
-					aois_ = extractROIRects(currFrame_, captureRects_);
+					aois_ = extractAOI(currFrame_, captureRects_);
 					trackMotionAndIllustrate(aois_, motionTracked);
 					drawPictureOnSubwindows(motionTracked);
 					releaseImageVector(aois_);
@@ -117,7 +119,7 @@ void AOI_ProcessorWindow::draw() {
 					drawImageOnMainWindow(clone_);
 				}
 				else {
-					drawAllRects(currFrame_);
+					drawAllAOIs(currFrame_);
 					drawImageOnMainWindow(currFrame_);
 				}
 			}
@@ -164,7 +166,7 @@ bool AOI_ProcessorWindow::saveScreen() {
 	return true;
 }
 
-vector<IplImage*> AOI_ProcessorWindow::extractROIRects(IplImage *image, vector<CaptureRect> rs) {
+vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<CaptureRect> rs) {
 	vector<IplImage*> ret;
 	int s = rs.size();
 
@@ -178,20 +180,48 @@ vector<IplImage*> AOI_ProcessorWindow::extractROIRects(IplImage *image, vector<C
 	return ret;
 }
 
-vector<IplImage*> AOI_ProcessorWindow::extractROIRects(IplImage *image, vector<CaptureTrapezium> ts) {
+vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<CaptureTrapezium> rs) {
 	vector<IplImage*> ret;
-	int s = ts.size();
+	int s = rs.size();
 
 	for (int i = 0; i<s; i++) {
-		cvSetImageROI(image, ts[i].getRect());
+		cvSetImageROI(image, rs[i].getRect());
 		ret.push_back(cvCreateImage(cvGetSize(image), image->depth, image->nChannels));
 		cvCopy(image, ret[i], NULL);
-		setElements(&ret[i], cvPoint(0,20), cvPoint(50, 22), (uchar)0);
 		cvResetImageROI(image);
 	}
 
 	return ret;
 }
+
+//vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<CaptureTrapezium> ts) {
+//	vector<IplImage*> ret;
+//	int s = ts.size();
+//	LineSegment2D lines[4];
+//	CvPoint2D32f relTopLeft;
+//
+//	for (int i = 0; i<s; i++) {
+//		// Get Rect part
+//		cvSetImageROI(image, ts[i].getRect());
+//		ret.push_back(cvCreateImage(cvGetSize(image), image->depth, image->nChannels));
+//		cvCopy(image, ret[i], NULL);
+//		// Clean Trapezium part
+//		relTopLeft = cvPoint2D32f(ts[i].getRect().x, ts[i].getRect().y);
+//		lines[0] = findLineSegmentFormular2D(subVectors(ts[i].getPoint(0), relTopLeft)
+//			, subVectors(ts[i].getPoint(1), relTopLeft));
+//		for (int y = 0; y < ret[i]->height; y++) {
+//			try {
+//				int x = (int)findX(lines[0], y);
+//				setElements(&ret[i], cvPoint(0, y), cvPoint(x, y), (uchar)0);
+//			} catch (...) {
+//
+//			}
+//		}
+//		cvResetImageROI(image);
+//	}
+//
+//	return ret;
+//}
 
 void AOI_ProcessorWindow::saveMarkedImage(IplImage* image) {
 	string directoryName = VW_Marker::getSaveDirectory(videoName_);
@@ -220,7 +250,7 @@ void AOI_ProcessorWindow::saveMarkedImage(IplImage* image) {
 		sprintf(filePath, "%s\\%010d.jpg", directoryName.c_str(), frameNum);
 		cvSaveImage(filePath, image);
 		// Save ts areas
-		vector<IplImage*> aois = extractROIRects(currFrame_, captureRects_);
+		vector<IplImage*> aois = extractAOI(currFrame_, captureRects_);
 		for (unsigned i=0; i<aois.size(); i++)
 		{
 			sprintf(filePath, "%s\\%010d_%05d.jpg", directoryName.c_str(), frameNum, i);

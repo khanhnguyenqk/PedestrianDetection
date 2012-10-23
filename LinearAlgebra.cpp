@@ -89,3 +89,14 @@ double findY(LineSegment2D mA, double x) {
 	}
 	throw UNSOLVABLE;
 }
+
+bool areOnSameSide(CvPoint2D32f first, CvPoint2D32f second,
+					CvPoint2D32f linep1, CvPoint2D32f linep2) {
+	RowVector3d a, b, c;
+	a << first.x - linep1.x, first.y - linep1.y, 0;
+	b << linep2.x - linep1.x, linep2.y - linep1.y, 0;
+	c << second.x - linep1.x, second.y - linep1.y, 0;
+	double x = (a.cross(b)).dot(c.cross(b));
+	cout << x << endl;
+	return x>0?true:false;
+}

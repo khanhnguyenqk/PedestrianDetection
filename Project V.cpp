@@ -23,18 +23,15 @@ int main(int argc, char** argv) {
 
 	Fl::run();
 
-	/*int aX, aY, bX, bY;
-	cin >> aX >> aY >> bX >> bY;
-	try {
-	LineSegment2D ret = findLineSegmentFormular2D(cvPoint2D32f(aX, aY), cvPoint2D32f(bX, bY));
-	cout << ret.line2D_ << endl;
-	double x = findX(ret, 0);
-	cout << x << endl;
-	} catch (...) {
-	cout << "Fucked in the ass.\n";
-	}
-
-	cin >> aX;*/
+	/*RowVector3d a, b, c;
+	a << 3, 3, 0;
+	b << 4, 1, 0;
+	c << 3.5, 4, 0;
+	cout << a.cross(b) / a.dot(b) << endl;
+	cout << c.cross(b) / c.dot(b) << endl;
+	cout << (a.cross(b) / a.dot(b)).dot(c.cross(b) / c.dot(b)) << endl;
+	int i;
+	cin >> i;*/
 
 	return 0;
 }

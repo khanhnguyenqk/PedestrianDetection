@@ -8,6 +8,9 @@ inline CvPoint addVectors(CvPoint a, CvPoint b) {
 	return cvPoint(a.x + b.x, a.y + b.y);
 }
 
+inline CvPoint2D32f addVectors(CvPoint2D32f a, CvPoint2D32f b) {
+	return cvPoint2D32f(a.x + b.x, a.y + b.y);
+}
 
 inline CvPoint2D32f addVectors(CvPoint2D32f a, CvPoint b) {
 	CvPoint temp = addVectors(cvPoint((int)a.x, (int)a.y), b);
@@ -16,6 +19,10 @@ inline CvPoint2D32f addVectors(CvPoint2D32f a, CvPoint b) {
 
 inline CvPoint subVectors(CvPoint a, CvPoint b) {
 		return cvPoint(a.x - b.x, a.y - b.y);
+}
+
+inline CvPoint2D32f subVectors(CvPoint2D32f a, CvPoint2D32f b) {
+	return cvPoint2D32f(a.x - b.x, a.y - b.y);
 }
 
 inline CvPoint mulVector(CvPoint a, double v) {

@@ -25,3 +25,5 @@ double findX(MatrixXd mA, double y);
 double findY(MatrixXd mA, double x);
 double findX(LineSegment2D mA, double y);
 double findY(LineSegment2D mA, double x);
+bool areOnSameSide(CvPoint2D32f first, CvPoint2D32f second,
+					CvPoint2D32f linep1, CvPoint2D32f linep2);

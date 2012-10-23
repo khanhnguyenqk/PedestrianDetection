@@ -35,13 +35,12 @@ public:
 
 // Draw rect
 protected:
-	void drawRect(IplImage* img, CaptureRect cr);
-	void drawRect(IplImage* img, CaptureTrapezium ct);
-	void drawAllRects(IplImage* img);
-	int mouseDrawingRectHandle(int event);
-	int mouseMovingRectHandle(int event);
-	int mouseResizeRectHandle(int event);
-	int mouseResizeTrapezium(int event);
+	void drawAOI(IplImage* img, CaptureRect cr);
+	void drawAOI(IplImage* img, CaptureTrapezium ct);
+	void drawAllAOIs(IplImage* img);
+	int mouseDrawingAOIHandle(int event);
+	int mouseMovingAOIHandle(int event);
+	int mouseResizeAOIHandle(int event);
 	void chooseDrawAction(int xMouse, int yMouse);
 	void darkenNonCurrent();
 	int getRelativeMouseX(int x);

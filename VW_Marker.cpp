@@ -42,17 +42,17 @@ int VW_Marker::handle(int event) {
 				cloneDone_ = false;
 				switch (drawStatus_) {
 				case NEW_RECT:
-					r = mouseDrawingRectHandle(event);
+					r = mouseDrawingAOIHandle(event);
 					break;
 				case MOVE_RECT:
-					r = mouseMovingRectHandle(event);
+					r = mouseMovingAOIHandle(event);
 					break;
 				case RESIZE_BR:
 				case RESIZE_TL:
 				case RESIZE_TR:
 				case RESIZE_BL:
-				case P1: case P2: case P3: case P4:
-					r = mouseResizeRectHandle(event);
+				case P0: case P1: case P2: case P3:
+					r = mouseResizeAOIHandle(event);
 					break;
 				default:
 					return 0;
@@ -67,32 +67,32 @@ int VW_Marker::handle(int event) {
 }
 
 // Draw rect
-void VW_Marker::drawRect(IplImage* img,  CaptureRect cr) {
+void VW_Marker::drawAOI(IplImage* img,  CaptureRect cr) {
 	cvRectangle(img, cvPoint(cr.getRect().x, cr.getRect().y),
 		cvPoint(cr.getRect().x+cr.getRect().width, cr.getRect().y+cr.getRect().height), 
 		cr.getColor(), cr.getThickness());
 }
 
-void VW_Marker::drawRect(IplImage* img, CaptureTrapezium ct) {
+void VW_Marker::drawAOI(IplImage* img, CaptureTrapezium ct) {
 	int lineType = 20;
 	CvScalar color = ct.getColor();
 	int thickness = ct.getThickness();
 	cvRectangle(img, cvPoint(ct.getRect().x, ct.getRect().y),
 		cvPoint(ct.getRect().x+ct.getRect().width, ct.getRect().y+ct.getRect().height), 
 		color, thickness);
-	cvLine(img, fromCvPoint2D32f(ct.getP1()), fromCvPoint2D32f(ct.getP2()), color, thickness, lineType);
-	cvLine(img, fromCvPoint2D32f(ct.getP2()), fromCvPoint2D32f(ct.getP3()), color, thickness, lineType);
-	cvLine(img, fromCvPoint2D32f(ct.getP3()), fromCvPoint2D32f(ct.getP4()), color, thickness, lineType);
-	cvLine(img, fromCvPoint2D32f(ct.getP4()), fromCvPoint2D32f(ct.getP1()), color, thickness, lineType);
+	cvLine(img, fromCvPoint2D32f(ct.getPoint(0)), fromCvPoint2D32f(ct.getPoint(1)), color, thickness, lineType);
+	cvLine(img, fromCvPoint2D32f(ct.getPoint(1)), fromCvPoint2D32f(ct.getPoint(2)), color, thickness, lineType);
+	cvLine(img, fromCvPoint2D32f(ct.getPoint(2)), fromCvPoint2D32f(ct.getPoint(3)), color, thickness, lineType);
+	cvLine(img, fromCvPoint2D32f(ct.getPoint(3)), fromCvPoint2D32f(ct.getPoint(0)), color, thickness, lineType);
 }
 
-void VW_Marker::drawAllRects(IplImage* img) {
+void VW_Marker::drawAllAOIs(IplImage* img) {
 	CR_Iterator it = captureRects_.begin();
 	for (;it != captureRects_.end(); it++)
-		drawRect(img, *it);
+		drawAOI(img, *it);
 }
 
-int VW_Marker::mouseDrawingRectHandle(int event) {
+int VW_Marker::mouseDrawingAOIHandle(int event) {
 	int x = getRelativeMouseX(Fl::event_x());
 	int y = getRelativeMouseY(Fl::event_y());
 	CaptureTrapezium cr;
@@ -124,7 +124,7 @@ int VW_Marker::mouseDrawingRectHandle(int event) {
 	}
 }
 
-int VW_Marker::mouseMovingRectHandle(int event) {
+int VW_Marker::mouseMovingAOIHandle(int event) {
 	int x = getRelativeMouseX(Fl::event_x());
 	int y = getRelativeMouseY(Fl::event_y());
 	CvPoint mousePoint = cvPoint(x, y);
@@ -154,7 +154,7 @@ int VW_Marker::mouseMovingRectHandle(int event) {
 	}
 }
 
-int VW_Marker::mouseResizeRectHandle(int event) {
+int VW_Marker::mouseResizeAOIHandle(int event) {
 	int x = getRelativeMouseX(Fl::event_x());
 	int y = getRelativeMouseY(Fl::event_y());
 	CvPoint mousePoint = cvPoint(x, y);
@@ -249,7 +249,7 @@ bool VW_Marker::cloneAndDrawRects() {
 	if (clone_)
 		cvReleaseImage(&clone_);
 	clone_ = cvCloneImage(currFrame_);
-	drawAllRects(clone_);
+	drawAllAOIs(clone_);
 	return true;
 }
 
@@ -321,7 +321,7 @@ void VW_Marker::draw() {
 					drawImageOnMainWindow(clone_);
 				}
 				else {
-					drawAllRects(currFrame_);
+					drawAllAOIs(currFrame_);
 					drawImageOnMainWindow(currFrame_);
 				}
 			}
