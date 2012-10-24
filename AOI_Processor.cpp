@@ -180,52 +180,74 @@ vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<Captur
 	return ret;
 }
 
-vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<CaptureTrapezium> rs) {
-	vector<IplImage*> ret;
-	int s = rs.size();
-
-	for (int i = 0; i<s; i++) {
-		cvSetImageROI(image, rs[i].getRect());
-		ret.push_back(cvCreateImage(cvGetSize(image), image->depth, image->nChannels));
-		cvCopy(image, ret[i], NULL);
-		cvResetImageROI(image);
-	}
-
-	return ret;
-}
-
-//vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<CaptureTrapezium> ts) {
+//vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<CaptureTrapezium> rs) {
 //	vector<IplImage*> ret;
-//	int s = ts.size();
-//	LineSegment2D lines[4];
-//	CvPoint2D32f relTopLeft;
+//	int s = rs.size();
 //
 //	for (int i = 0; i<s; i++) {
-//		// Get Rect part
-//		cvSetImageROI(image, ts[i].getRect());
+//		cvSetImageROI(image, rs[i].getRect());
 //		ret.push_back(cvCreateImage(cvGetSize(image), image->depth, image->nChannels));
 //		cvCopy(image, ret[i], NULL);
-//		// Clean Trapezium part
-//		relTopLeft = cvPoint2D32f(ts[i].getRect().x, ts[i].getRect().y);
-//		lines[0] = findLineSegmentFormular2D(subVectors(ts[i].getPoint(0), relTopLeft)
-//			, subVectors(ts[i].getPoint(1), relTopLeft));
-//		for (int y = 0; y < ret[i]->height; y++) {
-//			try {
-//				int x = (int)findX(lines[0], y);
-//				setElements(&ret[i], cvPoint(0, y), cvPoint(x, y), (uchar)0);
-//			} catch (...) {
-//
-//			}
-//		}
 //		cvResetImageROI(image);
 //	}
 //
 //	return ret;
 //}
 
+vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<CaptureTrapezium> ts) {
+	vector<IplImage*> ret;
+	int s = ts.size();
+	LineSegment2D lines[4];
+	CvPoint2D32f relTopLeft;
+
+	for (int i = 0; i<s; i++) {
+		// Get Rect part
+		cvSetImageROI(image, ts[i].getRect());
+		ret.push_back(cvCreateImage(cvGetSize(image), image->depth, image->nChannels));
+		cvCopy(image, ret[i], NULL);
+		// Clean Trapezium part
+		relTopLeft = cvPoint2D32f(ts[i].getRect().x, ts[i].getRect().y);
+		lines[0] = findLineSegmentFormular2D(subVectors(ts[i].getPoint(0), relTopLeft)
+			, subVectors(ts[i].getPoint(1), relTopLeft));
+		lines[1] = findLineSegmentFormular2D(subVectors(ts[i].getPoint(1), relTopLeft)
+			, subVectors(ts[i].getPoint(2), relTopLeft));
+		lines[2] = findLineSegmentFormular2D(subVectors(ts[i].getPoint(2), relTopLeft)
+			, subVectors(ts[i].getPoint(3), relTopLeft));
+		lines[3] = findLineSegmentFormular2D(subVectors(ts[i].getPoint(3), relTopLeft)
+			, subVectors(ts[i].getPoint(0), relTopLeft));
+		for (int y = 0; y < ret[i]->height; y++) {
+			int x[4]; 
+			x[0] = -1; x[1] = -1; x[2] = -1; x[3] = -1;
+			try { x[0] = (int)findX(lines[0], y);} catch (...) {}
+			try { x[1] = (int)findX(lines[1], y);} catch (...) {}
+			try { x[2] = (int)findX(lines[2], y);} catch (...) {}
+			try { x[3] = (int)findX(lines[3], y);} catch (...) {}
+			int low = -1, high = -1;
+			for (int j = 0; j < 4; j++) {
+				if (x[j] != -1) {
+					if (low == -1)
+						low = x[j];
+					else {
+						if ((low == x[j] && high == -1) || (x[j] > low))
+							high = x[j];
+						else if (x[j] < low) {
+							high = low;
+							low = x[j];
+						}
+					}
+				}
+			}
+			setElements(&ret[i], cvPoint(0, y), cvPoint(low, y), (uchar)0);
+			setElements(&ret[i], cvPoint(high, y), cvPoint(ret[i]->width - 1, y), (uchar)0);
+		}
+		cvResetImageROI(image);
+	}
+
+	return ret;
+}
+
 void AOI_ProcessorWindow::saveMarkedImage(IplImage* image) {
 	string directoryName = VW_Marker::getSaveDirectory(videoName_);
-	printf("%s", directoryName.c_str());
 	bool diretoryExists = false;
 
 	struct stat st;
@@ -274,20 +296,17 @@ void AOI_ProcessorWindow::setElements(IplImage **image, CvPoint from, CvPoint to
 	
 	// Pass all conditions.
 	for (int y = from.y; y <= to.y; y++) {
-		uchar *ptr;
+		uchar *ptr = (uchar*)((*image)->imageData + y * (*image)->widthStep);;
 		int begin, end;
-		if (y == from.y) {
-			ptr = (uchar*)((*image)->imageData + y * (*image)->widthStep + from.x);
-			begin = from.x;
-		} else {
-			ptr = (uchar*)((*image)->imageData + y * (*image)->widthStep);
+		if (y == from.y)
+			begin = from.x; 
+		else
 			begin = 0;
-		}
-		if (y == to.y) {
+		if (y == to.y)
 			end = to.x;
-		} else {
+		else
 			end = (*image)->width - 1;
-		}
+
 		for (int x = begin; x <= end; x++) {
 			ptr[3*x] = v;
 			ptr[3*x + 1] = v;

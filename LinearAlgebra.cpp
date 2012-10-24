@@ -21,7 +21,8 @@ bool isFiniteNumber(double x)
 }
 
 bool isLine2D(MatrixXd m) {
-	return m.rows() == 3 && m.cols() == 1 && (m(0,0) != 0 || m(0,1) != 0);
+	cout << "M: \"" << m << "\"\n";
+	return (((m.rows() == 3) && (m.cols() == 1)) /*&& ((m(0,0) != 0) || (m(0,1) != 0))*/);
 }
 
 MatrixXd findLineFormular2D(CvPoint2D32f a, CvPoint2D32f b) {
@@ -36,7 +37,7 @@ MatrixXd findLineFormular2D(CvPoint2D32f a, CvPoint2D32f b) {
 }
 
 LineSegment2D findLineSegmentFormular2D(CvPoint2D32f a, CvPoint2D32f b) {
-	if (a.x == b.x && a.y == b.y) {
+	/*if (a.x == b.x && a.y == b.y) {
 		throw UNSOLVABLE;
 	}
 	LineSegment2D ret;
@@ -45,7 +46,16 @@ LineSegment2D findLineSegmentFormular2D(CvPoint2D32f a, CvPoint2D32f b) {
 		(a.x - b.x)*a.y + a.x*(b.y - a.y);
 	ret.a_ = a;
 	ret.b_ = b;
-	return ret;
+	return ret;*/
+	try {
+		LineSegment2D ret;
+		ret.line2D_ = findLineFormular2D(a, b);
+		ret.a_ = a;
+		ret.b_ = b;
+		return ret;
+	} catch (int e) {
+		throw e;
+	}
 }
 
 double findX(MatrixXd mA, double y) {
@@ -97,6 +107,5 @@ bool areOnSameSide(CvPoint2D32f first, CvPoint2D32f second,
 	b << linep2.x - linep1.x, linep2.y - linep1.y, 0;
 	c << second.x - linep1.x, second.y - linep1.y, 0;
 	double x = (a.cross(b)).dot(c.cross(b));
-	cout << x << endl;
 	return x>0?true:false;
 }

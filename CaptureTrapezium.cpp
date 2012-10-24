@@ -26,28 +26,6 @@ void CaptureTrapezium::finishCreating() {
 
 int CaptureTrapezium::actionController(CvPoint mousePointer) {
 	if (this->contains(mousePointer)) {
-		//double sqrtP = sqrt(cornerPercentage_);
-		//CvPoint tl = cvPoint(rect_.x,rect_.y);
-		//CvPoint tr = cvPoint(rect_.x+rect_.width,rect_.y);
-		//CvPoint sizeVector = cvPoint(rect_.width, rect_.height);
-		//CvPoint sizeVectorInvert = cvPoint(-rect_.width, rect_.height);
-		////CvPoint center = divVector(addVectors(sizeVector,tl), 2);
-
-		//	CvPoint tl_inner = addVectors(tl, mulVector(sizeVector, sqrtP));
-		//if ((mousePointer.x <= tl_inner.x) && (mousePointer.y <= tl_inner.y))
-		//	return RESIZE_TL;
-
-		//CvPoint tr_inner = addVectors(tr, mulVector(sizeVectorInvert, sqrtP));
-		//if ((mousePointer.x >= tr_inner.x) && (mousePointer.y <= tr_inner.y))
-		//	return RESIZE_TR;
-
-		//CvPoint br_inner = addVectors(tl, mulVector(sizeVector, 1 - sqrtP));
-		//if ((mousePointer.x >= br_inner.x) && (mousePointer.y >= br_inner.y))
-		//	return RESIZE_BR;
-
-		//CvPoint bl_inner = addVectors(tr, mulVector(sizeVectorInvert, 1 - sqrtP));
-		//if ((mousePointer.x <= bl_inner.x) && (mousePointer.y >= bl_inner.y))
-		//	return RESIZE_BL;
 		RowVector2d mouse;
 		mouse << mousePointer.x, mousePointer.y;
 		RowVector2d pts[4];
@@ -69,7 +47,6 @@ int CaptureTrapezium::actionController(CvPoint mousePointer) {
 		} else if ((mouse - pts[3]).norm() <= cornerZone2) {
 			ret = P3;
 		}
-		printf("%d\n", ret);
 		if (ret != -1) return ret;
 		return MOVE_RECT;
 	}
