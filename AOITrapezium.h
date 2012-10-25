@@ -24,9 +24,10 @@ public:
 	CvPoint2D32f getPoint(int it);
 	// When user finish drawing the rectangle, assign 4 points to 4 corners of the
 	//	rectangle.
-	void finishCreating();
+	void reassignedCorners();
 	virtual void move(CvPoint vector);
-	virtual int actionController(CvPoint mousePointer);
+	virtual int actionController(CvPoint mousePointer, bool callParent = true);
 	virtual void moveCorner(int drawMethod, CvPoint vector);
 	static bool isConvex(CvPoint2D32f pts[4]);
+	virtual void drawSelfOnImage(IplImage* img);
 };

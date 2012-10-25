@@ -147,4 +147,11 @@ void AOIRect::moveCorner(int drawMethod, CvPoint vector) {
 	default:
 		throw "Exception here, change to something meaningful please!";
 	}
+	//void fixNegativeWH();
+}
+
+void AOIRect::drawSelfOnImage(IplImage* img) {
+	cvRectangle(img, cvPoint(rect_.x, rect_.y),
+		cvPoint(rect_.x+rect_.width, rect_.y+rect_.height), 
+		color_, thickness_);
 }

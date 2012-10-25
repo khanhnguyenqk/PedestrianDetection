@@ -74,7 +74,7 @@ void AOI_ProcessorWindow::motionDetectorManage(int size) {
 void AOI_ProcessorWindow::drawPictureOnSubwindows(vector<IplImage*> images) {
 	subwindowManage(images.size());
 	if (images.size() != windowNames_.size()) {
-		fl_alert("Number of cropped areas does not match number on windows created.");
+		/*fl_alert("Number of cropped areas does not match number on windows created.");*/
 		return;
 	}
 	for (unsigned i=0; i<images.size(); i++) {
@@ -98,7 +98,7 @@ void AOI_ProcessorWindow::draw() {
 			if (currFrame_ == NULL)
 				stop();
 			else {
-				cloneAndDrawRects();
+				cloneAndDrawAOIs();
 				drawImageOnMainWindow(clone_);
 				if (showSubwindows_) {
 					vector<IplImage*> motionTracked;
@@ -115,7 +115,7 @@ void AOI_ProcessorWindow::draw() {
 				stop();
 			else {
 				if (cloneDone_) {
-					cloneAndDrawRects();
+					cloneAndDrawAOIs();
 					drawImageOnMainWindow(clone_);
 				}
 				else {
@@ -166,84 +166,71 @@ bool AOI_ProcessorWindow::saveScreen() {
 	return true;
 }
 
-vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<AOIRect> rs) {
-	vector<IplImage*> ret;
-	int s = rs.size();
+vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<AOIRect*> aois) {
+	if (useRect_) {
+		vector<IplImage*> ret;
+		int s = aois.size();
 
-	for (int i = 0; i<s; i++) {
-		cvSetImageROI(image, rs[i].getRect());
-		ret.push_back(cvCreateImage(cvGetSize(image), image->depth, image->nChannels));
-		cvCopy(image, ret[i], NULL);
-		cvResetImageROI(image);
+		for (int i = 0; i<s; i++) {
+			cvSetImageROI(image, aois[i]->getRect());
+			ret.push_back(cvCreateImage(cvGetSize(image), image->depth, image->nChannels));
+			cvCopy(image, ret[i], NULL);
+			cvResetImageROI(image);
+		}
+
+		return ret;
 	}
+	else {
+		vector<IplImage*> ret;
+		int s = aois.size();
+		LineSegment2D lines[4];
+		CvPoint2D32f relTopLeft;
 
-	return ret;
-}
-
-//vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<AOITrapezium> rs) {
-//	vector<IplImage*> ret;
-//	int s = rs.size();
-//
-//	for (int i = 0; i<s; i++) {
-//		cvSetImageROI(image, rs[i].getRect());
-//		ret.push_back(cvCreateImage(cvGetSize(image), image->depth, image->nChannels));
-//		cvCopy(image, ret[i], NULL);
-//		cvResetImageROI(image);
-//	}
-//
-//	return ret;
-//}
-
-vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<AOITrapezium> ts) {
-	vector<IplImage*> ret;
-	int s = ts.size();
-	LineSegment2D lines[4];
-	CvPoint2D32f relTopLeft;
-
-	for (int i = 0; i<s; i++) {
-		// Get Rect part
-		cvSetImageROI(image, ts[i].getRect());
-		ret.push_back(cvCreateImage(cvGetSize(image), image->depth, image->nChannels));
-		cvCopy(image, ret[i], NULL);
-		// Clean Trapezium part
-		relTopLeft = cvPoint2D32f(ts[i].getRect().x, ts[i].getRect().y);
-		lines[0] = findLineSegmentFormular2D(subVectors(ts[i].getPoint(0), relTopLeft)
-			, subVectors(ts[i].getPoint(1), relTopLeft));
-		lines[1] = findLineSegmentFormular2D(subVectors(ts[i].getPoint(1), relTopLeft)
-			, subVectors(ts[i].getPoint(2), relTopLeft));
-		lines[2] = findLineSegmentFormular2D(subVectors(ts[i].getPoint(2), relTopLeft)
-			, subVectors(ts[i].getPoint(3), relTopLeft));
-		lines[3] = findLineSegmentFormular2D(subVectors(ts[i].getPoint(3), relTopLeft)
-			, subVectors(ts[i].getPoint(0), relTopLeft));
-		for (int y = 0; y < ret[i]->height; y++) {
-			int x[4]; 
-			x[0] = -1; x[1] = -1; x[2] = -1; x[3] = -1;
-			try { x[0] = (int)findX(lines[0], y);} catch (...) {}
-			try { x[1] = (int)findX(lines[1], y);} catch (...) {}
-			try { x[2] = (int)findX(lines[2], y);} catch (...) {}
-			try { x[3] = (int)findX(lines[3], y);} catch (...) {}
-			int low = -1, high = -1;
-			for (int j = 0; j < 4; j++) {
-				if (x[j] != -1) {
-					if (low == -1)
-						low = x[j];
-					else {
-						if ((low == x[j] && high == -1) || (x[j] > low))
-							high = x[j];
-						else if (x[j] < low) {
-							high = low;
+		for (int i = 0; i<s; i++) {
+			// Get Rect part
+			cvSetImageROI(image, aois[i]->getRect());
+			ret.push_back(cvCreateImage(cvGetSize(image), image->depth, image->nChannels));
+			cvCopy(image, ret[i], NULL);
+			// Clean Trapezium part
+			relTopLeft = cvPoint2D32f(aois[i]->getRect().x, aois[i]->getRect().y);
+			lines[0] = findLineSegmentFormular2D(subVectors(aois[i]->getPoint(0), relTopLeft)
+				, subVectors(aois[i]->getPoint(1), relTopLeft));
+			lines[1] = findLineSegmentFormular2D(subVectors(aois[i]->getPoint(1), relTopLeft)
+				, subVectors(aois[i]->getPoint(2), relTopLeft));
+			lines[2] = findLineSegmentFormular2D(subVectors(aois[i]->getPoint(2), relTopLeft)
+				, subVectors(aois[i]->getPoint(3), relTopLeft));
+			lines[3] = findLineSegmentFormular2D(subVectors(aois[i]->getPoint(3), relTopLeft)
+				, subVectors(aois[i]->getPoint(0), relTopLeft));
+			for (int y = 0; y < ret[i]->height; y++) {
+				int x[4]; 
+				x[0] = -1; x[1] = -1; x[2] = -1; x[3] = -1;
+				try { x[0] = (int)findX(lines[0], y);} catch (...) {}
+				try { x[1] = (int)findX(lines[1], y);} catch (...) {}
+				try { x[2] = (int)findX(lines[2], y);} catch (...) {}
+				try { x[3] = (int)findX(lines[3], y);} catch (...) {}
+				int low = -1, high = -1;
+				for (int j = 0; j < 4; j++) {
+					if (x[j] != -1) {
+						if (low == -1)
 							low = x[j];
+						else {
+							if ((low == x[j] && high == -1) || (x[j] > low))
+								high = x[j];
+							else if (x[j] < low) {
+								high = low;
+								low = x[j];
+							}
 						}
 					}
 				}
+				setElements(&ret[i], cvPoint(0, y), cvPoint(low, y), (uchar)0);
+				setElements(&ret[i], cvPoint(high, y), cvPoint(ret[i]->width - 1, y), (uchar)0);
 			}
-			setElements(&ret[i], cvPoint(0, y), cvPoint(low, y), (uchar)0);
-			setElements(&ret[i], cvPoint(high, y), cvPoint(ret[i]->width - 1, y), (uchar)0);
+			cvResetImageROI(image);
 		}
-		cvResetImageROI(image);
-	}
 
-	return ret;
+		return ret;
+	}
 }
 
 void AOI_ProcessorWindow::saveMarkedImage(IplImage* image) {

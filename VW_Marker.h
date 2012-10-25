@@ -9,15 +9,16 @@
 
 using namespace std;
 
-typedef vector<AOITrapezium>::iterator CR_Iterator;
+typedef vector<AOIRect*>::iterator CR_Iterator;
 
 class VW_Marker :
 	public VideoWindow
 {
 protected:
+	bool useRect_;
 	bool cloneDone_;
-	vector<AOITrapezium> AOIs_;
-	CR_Iterator currentRect_;
+	vector<AOIRect*> AOIs_;
+	CR_Iterator currentAOI_;
 	int drawStatus_;
 	bool drawnOrChanged_;
 	CvPoint lastMousePoint_;
@@ -25,6 +26,7 @@ protected:
 public:
 	VW_Marker(int x,int y , int w, int h,
 		const char* video=0, const char *L=0):VideoWindow(x,y,w,h,video,L) {
+		useRect_ = true;
 		cloneDone_ = true;
 		drawStatus_ = NEW_RECT;
 	}
@@ -33,8 +35,6 @@ public:
 
 // Draw rect
 protected:
-	void drawAOI(IplImage* img, AOIRect cr);
-	void drawAOI(IplImage* img, AOITrapezium ct);
 	void drawAllAOIs(IplImage* img);
 	int mouseDrawingAOIHandle(int event);
 	int mouseMovingAOIHandle(int event);
@@ -48,11 +48,11 @@ protected:
 public:
 	string getSaveDirectory(const char* fileName);
 	bool setDrawStatus(int status);
-	bool deleteCurrentRect();
-	bool deleteAllRect();
-	bool cloneAndDrawRects();
-	bool nextRect();
-	bool prevRect();
+	bool deleteCurrentAOI();
+	bool deleteAllAOIs();
+	bool cloneAndDrawAOIs();
+	bool nextAOI();
+	bool prevAOI();
 
 // Play control extend
 	virtual void draw();

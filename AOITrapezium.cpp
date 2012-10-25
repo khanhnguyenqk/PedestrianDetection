@@ -17,14 +17,14 @@ AOITrapezium::~AOITrapezium(void)
 {
 }
 
-void AOITrapezium::finishCreating() {
+void AOITrapezium::reassignedCorners() {
 	pts_[0] = cvPoint2D32f(rect_.x, rect_.y);
 	pts_[1] = cvPoint2D32f(rect_.x+rect_.width, rect_.y);
 	pts_[2] = cvPoint2D32f(rect_.x+rect_.width, rect_.y+rect_.height);
 	pts_[3] = cvPoint2D32f(rect_.x, rect_.y+rect_.height);
 }
 
-int AOITrapezium::actionController(CvPoint mousePointer) {
+int AOITrapezium::actionController(CvPoint mousePointer, bool callParent) {
 	if (this->contains(mousePointer)) {
 		RowVector2d mouse;
 		mouse << mousePointer.x, mousePointer.y;
@@ -58,6 +58,11 @@ void AOITrapezium::moveCorner(int drawMethod, CvPoint vector) {
 	CvPoint2D32f dest;
 	CvPoint2D32f newPoints[4];
 	switch (drawMethod) {
+	case RESIZE_TL: case RESIZE_TR: case RESIZE_BR: case RESIZE_BL:
+		pts_[0] = pts_[1] = pts_[2] = pts_[3] = cvPoint2D32f(0.0, 0.0);
+		AOIRect::moveCorner(drawMethod, vector);
+		reassignedCorners();
+		break;
 	case P0:
 		dest = addVectors(pts_[0], vector);
 		newPoints[0] = dest; 
@@ -65,6 +70,7 @@ void AOITrapezium::moveCorner(int drawMethod, CvPoint vector) {
 		if (isConvex(newPoints)) {
 			pts_[0] = addVectors(pts_[0], vector);
 		}
+		fixBoundaryRect();
 		break;
 	case P1:
 		dest = addVectors(pts_[1], vector);
@@ -73,6 +79,7 @@ void AOITrapezium::moveCorner(int drawMethod, CvPoint vector) {
 		if (isConvex(newPoints)) {
 			pts_[1] = addVectors(pts_[1], vector);
 		}
+		fixBoundaryRect();
 		break;
 	case P2:
 		dest = addVectors(pts_[2], vector);
@@ -81,6 +88,7 @@ void AOITrapezium::moveCorner(int drawMethod, CvPoint vector) {
 		if (isConvex(newPoints)) {
 			pts_[2] = addVectors(pts_[2], vector);
 		}
+		fixBoundaryRect();
 		break;
 	case P3:
 		dest = addVectors(pts_[3], vector);
@@ -89,11 +97,11 @@ void AOITrapezium::moveCorner(int drawMethod, CvPoint vector) {
 		if (isConvex(newPoints)) {
 			pts_[3] = addVectors(pts_[3], vector);
 		}
+		fixBoundaryRect();
 		break;
 	default:
 		throw "Exception here, change to something meaningful please!";
 	}
-	fixBoundaryRect();
 }
 
 void AOITrapezium::fixBoundaryRect() {
@@ -130,4 +138,13 @@ CvPoint2D32f AOITrapezium::getPoint(int it) {
 bool AOITrapezium::isConvex(CvPoint2D32f pts[4]) {
 	return (!areOnSameSide(pts[0], pts[2], pts[1], pts[3])) && 
 		(!areOnSameSide(pts[1], pts[3], pts[0], pts[2]));
+}
+
+void AOITrapezium::drawSelfOnImage(IplImage* img) {
+	int lineType = 20;
+	AOIRect::drawSelfOnImage(img);
+	cvLine(img, fromCvPoint2D32f(pts_[0]), fromCvPoint2D32f(pts_[1]), color_, thickness_, lineType);
+	cvLine(img, fromCvPoint2D32f(pts_[1]), fromCvPoint2D32f(pts_[2]), color_, thickness_, lineType);
+	cvLine(img, fromCvPoint2D32f(pts_[2]), fromCvPoint2D32f(pts_[3]), color_, thickness_, lineType);
+	cvLine(img, fromCvPoint2D32f(pts_[3]), fromCvPoint2D32f(pts_[0]), color_, thickness_, lineType);
 }

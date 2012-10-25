@@ -11,9 +11,9 @@
 
 VW_Marker::~VW_Marker(void)
 {
-	/*for (int i=0; i<AOIs_.size(); i++) {
+	for (unsigned i=0; i<AOIs_.size(); i++) {
 		delete AOIs_[i];
-	}*/
+	}
 	AOIs_.clear();
 }
 
@@ -68,56 +68,36 @@ int VW_Marker::handle(int event) {
 	return VideoWindow::handle(event);
 }
 
-// Draw rect
-void VW_Marker::drawAOI(IplImage* img,  AOIRect cr) {
-	cvRectangle(img, cvPoint(cr.getRect().x, cr.getRect().y),
-		cvPoint(cr.getRect().x+cr.getRect().width, cr.getRect().y+cr.getRect().height), 
-		cr.getColor(), cr.getThickness());
-}
-
-void VW_Marker::drawAOI(IplImage* img, AOITrapezium ct) {
-	int lineType = 20;
-	CvScalar color = ct.getColor();
-	int thickness = ct.getThickness();
-	cvRectangle(img, cvPoint(ct.getRect().x, ct.getRect().y),
-		cvPoint(ct.getRect().x+ct.getRect().width, ct.getRect().y+ct.getRect().height), 
-		color, thickness);
-	cvLine(img, fromCvPoint2D32f(ct.getPoint(0)), fromCvPoint2D32f(ct.getPoint(1)), color, thickness, lineType);
-	cvLine(img, fromCvPoint2D32f(ct.getPoint(1)), fromCvPoint2D32f(ct.getPoint(2)), color, thickness, lineType);
-	cvLine(img, fromCvPoint2D32f(ct.getPoint(2)), fromCvPoint2D32f(ct.getPoint(3)), color, thickness, lineType);
-	cvLine(img, fromCvPoint2D32f(ct.getPoint(3)), fromCvPoint2D32f(ct.getPoint(0)), color, thickness, lineType);
-}
-
 void VW_Marker::drawAllAOIs(IplImage* img) {
 	CR_Iterator it = AOIs_.begin();
 	for (;it != AOIs_.end(); it++)
-		drawAOI(img, *it);
+		(*it)->drawSelfOnImage(img);
 }
 
 int VW_Marker::mouseDrawingAOIHandle(int event) {
 	int x = getRelativeMouseX(Fl::event_x());
 	int y = getRelativeMouseY(Fl::event_y());
-	AOITrapezium cr;
+	AOIRect *aoi = new AOITrapezium;
 	switch (event) {
 
 	case FL_PUSH:
 		drawnOrChanged_ = true;
-		cr.setRect(cvRect(x, y, 0, 0));
-		AOIs_.push_back(cr);
-		currentRect_=AOIs_.end() - 1;
-		currentRect_->setColor(colorChooser_.getAColor());
-		cloneAndDrawRects();
+		aoi->setRect(cvRect(x, y, 0, 0));
+		AOIs_.push_back(aoi);
+		currentAOI_=AOIs_.end() - 1;
+		(*currentAOI_)->setColor(colorChooser_.getAColor());
+		cloneAndDrawAOIs();
 		this->redraw();
 		return 1;
 	case FL_DRAG:
-		currentRect_->resize(x - currentRect_->getRect().x, y - currentRect_->getRect().y);
-		cloneAndDrawRects();
+		(*currentAOI_)->resize(x - (*currentAOI_)->getRect().x, y - (*currentAOI_)->getRect().y);
+		cloneAndDrawAOIs();
 		this->redraw();
 		return 1;
 	case FL_RELEASE:
-		currentRect_->fixNegativeWH();
-		currentRect_->finishCreating();
-		cloneAndDrawRects();
+		(*currentAOI_)->fixNegativeWH();
+		(*currentAOI_)->reassignedCorners();
+		cloneAndDrawAOIs();
 		this->redraw();
 		drawStatus_ = -1;
 		return 1;
@@ -136,18 +116,18 @@ int VW_Marker::mouseMovingAOIHandle(int event) {
 	case FL_PUSH:
 		drawnOrChanged_ = true;
 		lastMousePoint_ = mousePoint;
-		cloneAndDrawRects();
+		cloneAndDrawAOIs();
 		return 1;
 	case FL_DRAG:
 		vector = subVectors(mousePoint, lastMousePoint_);
-		currentRect_->move(vector);
+		(*currentAOI_)->move(vector);
 		lastMousePoint_ = mousePoint;
-		cloneAndDrawRects();
+		cloneAndDrawAOIs();
 		this->redraw();
 		return 1;
 	case FL_RELEASE:
-		currentRect_->fixNegativeWH();
-		cloneAndDrawRects();
+		(*currentAOI_)->fixNegativeWH();
+		cloneAndDrawAOIs();
 		this->redraw();
 		drawStatus_ = -1;
 		return 1;
@@ -167,18 +147,18 @@ int VW_Marker::mouseResizeAOIHandle(int event) {
 	case FL_PUSH:
 		drawnOrChanged_ = true;
 		lastMousePoint_ = mousePoint;
-		cloneAndDrawRects();
+		cloneAndDrawAOIs();
 		return 1;
 	case FL_DRAG:
-		currentRect_->moveCorner(drawStatus_, vector);
+		(*currentAOI_)->moveCorner(drawStatus_, vector);
 		
 		lastMousePoint_ = mousePoint;
-		cloneAndDrawRects();
+		cloneAndDrawAOIs();
 		this->redraw();
 		return 1;
 	case FL_RELEASE:
-		currentRect_->fixNegativeWH();
-		cloneAndDrawRects();
+		(*currentAOI_)->fixNegativeWH();
+		cloneAndDrawAOIs();
 		this->redraw();
 		drawStatus_ = -1;
 		return 1;
@@ -194,16 +174,19 @@ void VW_Marker::chooseDrawAction(int xMouse, int yMouse) {
 			return;
 		}
 		CvPoint p = cvPoint(xMouse, yMouse);
-		CR_Iterator it = currentRect_;
+		CR_Iterator it = currentAOI_;
 		do {
-			drawStatus_ = it->actionController(p);
+			if (useRect_)
+				drawStatus_ = (*it)->actionController(p);
+			else
+				drawStatus_ = ((AOITrapezium*)*it)->actionController(p);
 			if (drawStatus_ != -1) {
-				currentRect_ = it;
+				currentAOI_ = it;
 				return;
 			}
 			it++;
 			if (it == AOIs_.end()) it = AOIs_.begin();
-		} while (it != currentRect_);
+		} while (it != currentAOI_);
 
 		if (drawStatus_ == -1)
 			drawStatus_ = NEW_RECT;
@@ -228,23 +211,27 @@ bool VW_Marker::setDrawStatus(int status) {
 	return false;
 }
 
-bool VW_Marker::deleteCurrentRect() {
+bool VW_Marker::deleteCurrentAOI() {
 	if (AOIs_.empty())
 		return true;
-	AOIs_.erase(currentRect_);
-	currentRect_ = AOIs_.begin();
+	delete *currentAOI_;
+	AOIs_.erase(currentAOI_);
+	currentAOI_ = AOIs_.begin();
 	return true;
 }
 
-bool VW_Marker::deleteAllRect() {
+bool VW_Marker::deleteAllAOIs() {
 	if (AOIs_.empty())
 		return true;
+	for (unsigned i=0; i<AOIs_.size(); i++) {
+		delete AOIs_[i];
+	}
 	AOIs_.clear();
-	currentRect_ = AOIs_.begin();
+	currentAOI_ = AOIs_.begin();
 	return true;
 }
 
-bool VW_Marker::cloneAndDrawRects() {
+bool VW_Marker::cloneAndDrawAOIs() {
 	if (currFrame_ == NULL)
 		return false;
 	darkenNonCurrent();
@@ -258,10 +245,10 @@ bool VW_Marker::cloneAndDrawRects() {
 void VW_Marker::darkenNonCurrent() {
 	CR_Iterator it = AOIs_.begin();
 	for (;it != AOIs_.end(); it++) {
-		if (it != currentRect_) {
-			it->darkenColor();
+		if (it != currentAOI_) {
+			(*it)->darkenColor();
 		} else {
-			it->returnOriginalColor();
+			(*it)->returnOriginalColor();
 		}
 	}
 }
@@ -282,21 +269,21 @@ int VW_Marker::getRelativeMouseY(int y) {
 	return (int)ret;
 }
 
-bool VW_Marker::nextRect() {
+bool VW_Marker::nextAOI() {
 	if (AOIs_.empty())
 		return false;
-	currentRect_ ++;
-	if (currentRect_ == AOIs_.end())
-		currentRect_ = AOIs_.begin();
+	currentAOI_ ++;
+	if (currentAOI_ == AOIs_.end())
+		currentAOI_ = AOIs_.begin();
 	return true;
 }
 
-bool VW_Marker::prevRect() {
+bool VW_Marker::prevAOI() {
 	if (AOIs_.empty())
 		return false;
-	if (currentRect_ == AOIs_.begin())
-		currentRect_ = AOIs_.end();
-	currentRect_--;
+	if (currentAOI_ == AOIs_.begin())
+		currentAOI_ = AOIs_.end();
+	currentAOI_--;
 	return true;
 }
 
@@ -310,7 +297,7 @@ void VW_Marker::draw() {
 			if (currFrame_ == NULL)
 				stop();
 			else {
-				cloneAndDrawRects();
+				cloneAndDrawAOIs();
 				drawImageOnMainWindow(clone_);
 			}
 		} else if ((playStatus_ == PAUSE)) {
@@ -319,7 +306,7 @@ void VW_Marker::draw() {
 				stop();
 			else {
 				if (cloneDone_) {
-					cloneAndDrawRects();
+					cloneAndDrawAOIs();
 					drawImageOnMainWindow(clone_);
 				}
 				else {

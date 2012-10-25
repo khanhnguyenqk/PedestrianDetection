@@ -42,6 +42,10 @@ public:
 	virtual void moveCorner(int drawMethod, CvPoint vector);
 
 	virtual int actionController(CvPoint mousePointer);
+	virtual void drawSelfOnImage(IplImage* img);
+
+	virtual void reassignedCorners() = 0;
+	virtual CvPoint2D32f getPoint(int i) = 0;
 };
 
 

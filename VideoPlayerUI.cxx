@@ -275,7 +275,7 @@ void VideoPlayerUI::cb_slider(Fl_Slider* obj, void* v) {
 
 void VideoPlayerUI::cb_openFile_i(Fl_Button* obj, void* v) {
 	this->aoiProcessorWindow->stop();
-	this->aoiProcessorWindow->deleteAllRect();
+	this->aoiProcessorWindow->deleteAllAOIs();
 	this->aoiProcessorWindow->initiateVideo(this->filePathInput_->value());
 	this->aoiProcessorWindow->play();
 }
@@ -291,24 +291,24 @@ void VideoPlayerUI::cb_newRect(Fl_Button* obj, void* v) {
 }
 
 void VideoPlayerUI::cb_delRect_i(Fl_Button* obj, void* v) {
-	this->aoiProcessorWindow->deleteCurrentRect();
-	this->aoiProcessorWindow->cloneAndDrawRects();
+	this->aoiProcessorWindow->deleteCurrentAOI();
+	this->aoiProcessorWindow->cloneAndDrawAOIs();
 }
 void VideoPlayerUI::cb_delRect(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_delRect_i(obj, v);
 }
 
 void VideoPlayerUI::cb_nextRect_i(Fl_Button* obj, void* v) {
-	this->aoiProcessorWindow->nextRect();
-	this->aoiProcessorWindow->cloneAndDrawRects();
+	this->aoiProcessorWindow->nextAOI();
+	this->aoiProcessorWindow->cloneAndDrawAOIs();
 }
 void VideoPlayerUI::cb_nextRect(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_nextRect_i(obj, v);
 }
 
 void VideoPlayerUI::cb_prevRect_i(Fl_Button* obj, void* v) {
-	this->aoiProcessorWindow->prevRect();
-	this->aoiProcessorWindow->cloneAndDrawRects();
+	this->aoiProcessorWindow->prevAOI();
+	this->aoiProcessorWindow->cloneAndDrawAOIs();
 }
 void VideoPlayerUI::cb_prevRect(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_prevRect_i(obj, v);
