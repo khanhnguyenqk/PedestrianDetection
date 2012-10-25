@@ -53,6 +53,8 @@ public:
 	bool cloneAndDrawAOIs();
 	bool nextAOI();
 	bool prevAOI();
+	void useRectangle(bool b);
+	bool isUsingRectangle();
 
 // Play control extend
 	virtual void draw();

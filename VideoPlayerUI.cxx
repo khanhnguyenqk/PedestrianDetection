@@ -136,20 +136,24 @@ VideoPlayerUI::VideoPlayerUI() {
 		wDrawTools = wMainWindow - xDrawTools;
 		hDrawTools = hMainWindow;
 		Fl_Group* o = new Fl_Group(xDrawTools, yDrawTools, wDrawTools, hDrawTools, "Drawing tools");
-		{ newRect_ = new Fl_Button(xDrawTools + gap, yDrawTools + gap, 
-									wMedButton, hMedButton, "New Rect");
+		{ newAOI_ = new Fl_Button(xDrawTools + gap, yDrawTools + gap, 
+									wMedButton, hMedButton, "New AOI");
 		}
-		{ deleteRect_ = new Fl_Button(xDrawTools+2*gap+wMedButton, yDrawTools+gap, 
-									wMedButton, hMedButton, "Del Rect");
+		{ deleteAOI_ = new Fl_Button(xDrawTools+2*gap+wMedButton, yDrawTools+gap, 
+									wMedButton, hMedButton, "Del AOI");
 		}
-		{ prevRect_ = new Fl_Button(xDrawTools+gap, yDrawTools+2*gap+hMedButton, 
-			wMedButton, hMedButton, "Prev Rect");
+		{ prevAOI_ = new Fl_Button(xDrawTools+gap, yDrawTools+2*gap+hMedButton, 
+			wMedButton, hMedButton, "Prev AOI");
 		}
-		{ nextRect_ = new Fl_Button(xDrawTools+2*gap+wMedButton, yDrawTools+2*gap+hMedButton, 
-			wMedButton, hMedButton, "Next Rect");
+		{ nextAOI_ = new Fl_Button(xDrawTools+2*gap+wMedButton, yDrawTools+2*gap+hMedButton, 
+			wMedButton, hMedButton, "Next AOI");
 		}
 		{ savePicture_ = new Fl_Button(xDrawTools+gap,yDrawTools+3*gap+2*hMedButton,wMedButton,hMedButton,
-			"Save");}
+			"Save");
+		}
+		{ useRect_ = new Fl_Button(xDrawTools+2*gap+wMedButton,yDrawTools+3*gap+2*hMedButton,wMedButton,hMedButton,
+			"Rectangle");
+		}
       o->end();
     } // Fl_Group* o
     mainWindow_->end();
@@ -183,12 +187,13 @@ VideoPlayerUI::VideoPlayerUI() {
   yPan_->callback((Fl_Callback*)cb_yPan);
   slider_->callback((Fl_Callback*)cb_slider);
   openFile_->callback((Fl_Callback*)cb_openFile);
-  newRect_->callback((Fl_Callback*)cb_newRect);
-  deleteRect_->callback((Fl_Callback*)cb_delRect);
-  nextRect_->callback((Fl_Callback*)cb_nextRect);
-  prevRect_->callback((Fl_Callback*)cb_prevRect);
+  newAOI_->callback((Fl_Callback*)cb_newAOI);
+  deleteAOI_->callback((Fl_Callback*)cb_delAOI);
+  nextAOI_->callback((Fl_Callback*)cb_nextAOI);
+  prevAOI_->callback((Fl_Callback*)cb_prevAOI);
   defaultSetting_->callback((Fl_Callback*)cb_default);
   savePicture_->callback((Fl_Callback*)cb_save);
+  useRect_->callback((Fl_Callback*)cb_useRect);
 }
 
 // Call back methods
@@ -283,35 +288,35 @@ void VideoPlayerUI::cb_openFile(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_openFile_i(obj, v);
 }
 
-void VideoPlayerUI::cb_newRect_i(Fl_Button* obj, void* v) {
+void VideoPlayerUI::cb_newAOI_i(Fl_Button* obj, void* v) {
 	this->aoiProcessorWindow->setDrawStatus(NEW_RECT);
 }
-void VideoPlayerUI::cb_newRect(Fl_Button* obj, void* v) {
-	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_newRect_i(obj, v);
+void VideoPlayerUI::cb_newAOI(Fl_Button* obj, void* v) {
+	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_newAOI_i(obj, v);
 }
 
-void VideoPlayerUI::cb_delRect_i(Fl_Button* obj, void* v) {
+void VideoPlayerUI::cb_delAOI_i(Fl_Button* obj, void* v) {
 	this->aoiProcessorWindow->deleteCurrentAOI();
 	this->aoiProcessorWindow->cloneAndDrawAOIs();
 }
-void VideoPlayerUI::cb_delRect(Fl_Button* obj, void* v) {
-	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_delRect_i(obj, v);
+void VideoPlayerUI::cb_delAOI(Fl_Button* obj, void* v) {
+	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_delAOI_i(obj, v);
 }
 
-void VideoPlayerUI::cb_nextRect_i(Fl_Button* obj, void* v) {
+void VideoPlayerUI::cb_nextAOI_i(Fl_Button* obj, void* v) {
 	this->aoiProcessorWindow->nextAOI();
 	this->aoiProcessorWindow->cloneAndDrawAOIs();
 }
-void VideoPlayerUI::cb_nextRect(Fl_Button* obj, void* v) {
-	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_nextRect_i(obj, v);
+void VideoPlayerUI::cb_nextAOI(Fl_Button* obj, void* v) {
+	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_nextAOI_i(obj, v);
 }
 
-void VideoPlayerUI::cb_prevRect_i(Fl_Button* obj, void* v) {
+void VideoPlayerUI::cb_prevAOI_i(Fl_Button* obj, void* v) {
 	this->aoiProcessorWindow->prevAOI();
 	this->aoiProcessorWindow->cloneAndDrawAOIs();
 }
-void VideoPlayerUI::cb_prevRect(Fl_Button* obj, void* v) {
-	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_prevRect_i(obj, v);
+void VideoPlayerUI::cb_prevAOI(Fl_Button* obj, void* v) {
+	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_prevAOI_i(obj, v);
 }
 
 void VideoPlayerUI::cb_default_i(Fl_Button* obj, void* v) {
@@ -332,6 +337,20 @@ void VideoPlayerUI::cb_save_i(Fl_Button* obj, void* v) {
 }
 void VideoPlayerUI::cb_save(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_save_i(obj, v);
+}
+
+void VideoPlayerUI::cb_useRect_i(Fl_Button* obj, void* v) {
+	if (this->aoiProcessorWindow->isUsingRectangle()) {
+		useRect_->label("Trapezium");
+		this->aoiProcessorWindow->useRectangle(false);
+	} else {
+		useRect_->label("Rectangle");
+		this->aoiProcessorWindow->useRectangle(true);
+	}
+	
+}
+void VideoPlayerUI::cb_useRect(Fl_Button* obj, void* v) {
+	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_useRect_i(obj, v);
 }
 
 // Other methods

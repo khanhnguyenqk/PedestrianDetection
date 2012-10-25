@@ -319,3 +319,11 @@ void VW_Marker::draw() {
 	}
 	updateDependences();
 }
+
+void VW_Marker::useRectangle(bool b) {
+	useRect_ = b;
+}
+
+bool VW_Marker::isUsingRectangle() {
+	return useRect_;
+}

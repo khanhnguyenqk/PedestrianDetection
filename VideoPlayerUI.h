@@ -35,11 +35,12 @@ public:
   Fl_Button *defaultSetting_;
 
   // Draw tools
-  Fl_Button *newRect_;
-  Fl_Button *deleteRect_;
-  Fl_Button *nextRect_;
-  Fl_Button *prevRect_;
+  Fl_Button *newAOI_;
+  Fl_Button *deleteAOI_;
+  Fl_Button *nextAOI_;
+  Fl_Button *prevAOI_;
   Fl_Button *savePicture_;
+  Fl_Button *useRect_;
 
   // Call back
   void cb_play_i(Fl_Button* obj, void* v);
@@ -81,23 +82,26 @@ public:
   void cb_openFile_i(Fl_Button* obj, void* v);
   static void cb_openFile(Fl_Button* obj, void* v);
 
-  void cb_newRect_i(Fl_Button* obj, void* v);
-  static void cb_newRect(Fl_Button* obj, void* v);
+  void cb_newAOI_i(Fl_Button* obj, void* v);
+  static void cb_newAOI(Fl_Button* obj, void* v);
 
-  void cb_delRect_i(Fl_Button* obj, void* v);
-  static void cb_delRect(Fl_Button* obj, void* v);
+  void cb_delAOI_i(Fl_Button* obj, void* v);
+  static void cb_delAOI(Fl_Button* obj, void* v);
 
-  void cb_nextRect_i(Fl_Button* obj, void* v);
-  static void cb_nextRect(Fl_Button* obj, void* v);
+  void cb_nextAOI_i(Fl_Button* obj, void* v);
+  static void cb_nextAOI(Fl_Button* obj, void* v);
 
-  void cb_prevRect_i(Fl_Button* obj, void* v);
-  static void cb_prevRect(Fl_Button* obj, void* v);
+  void cb_prevAOI_i(Fl_Button* obj, void* v);
+  static void cb_prevAOI(Fl_Button* obj, void* v);
 
   void cb_default_i(Fl_Button* obj, void* v);
   static void cb_default(Fl_Button* obj, void* v);
 
   void cb_save_i(Fl_Button* obj, void* v);
   static void cb_save(Fl_Button* obj, void* v);
+
+  void cb_useRect_i(Fl_Button* obj, void* v);
+  static void cb_useRect(Fl_Button* obj, void* v);
   // Others
 public:
 	void setFilePath(const char* filePath);
