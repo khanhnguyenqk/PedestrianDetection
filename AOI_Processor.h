@@ -29,8 +29,8 @@ public:
 
 	void saveMarkedImage(IplImage* image);
 	bool saveScreen();
-	vector<IplImage*> extractAOI(IplImage *image, vector<CaptureRect> rs);
-	vector<IplImage*> extractAOI(IplImage *image, vector<CaptureTrapezium> trs);
+	vector<IplImage*> extractAOI(IplImage *image, vector<AOIRect> rs);
+	vector<IplImage*> extractAOI(IplImage *image, vector<AOITrapezium> trs);
 	virtual int handle(int event);
 
 // Utilities

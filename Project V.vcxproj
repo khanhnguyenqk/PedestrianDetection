@@ -82,8 +82,8 @@
   <ItemGroup>
     <ClInclude Include="AOI_Processor.h" />
     <ClInclude Include="Boundary.h" />
-    <ClInclude Include="CaptureRect.h" />
-    <ClInclude Include="CaptureTrapezium.h" />
+    <ClInclude Include="AOIRect.h" />
+    <ClInclude Include="AOITrapezium.h" />
     <ClInclude Include="ColorChooser.h" />
     <ClInclude Include="CvPoint_Wrapper.h" />
     <ClInclude Include="LinearAlgebra.h" />
@@ -99,8 +99,8 @@
   <ItemGroup>
     <ClCompile Include="AOI_Processor.cpp" />
     <ClCompile Include="Boundary.cpp" />
-    <ClCompile Include="CaptureRect.cpp" />
-    <ClCompile Include="CaptureTrapezium.cpp" />
+    <ClCompile Include="AOIRect.cpp" />
+    <ClCompile Include="AOITrapezium.cpp" />
     <ClCompile Include="ColorChooser.cpp" />
     <ClCompile Include="LinearAlgebra.cpp" />
     <ClCompile Include="MotionDetector.cpp" />

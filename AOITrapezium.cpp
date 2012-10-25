@@ -1,30 +1,30 @@
 #include "StdAfx.h"
-#include "CaptureTrapezium.h"
+#include "AOITrapezium.h"
 #include "CvPoint_Wrapper.h"
 #include "Eigen/Dense"
 #include "LinearAlgebra.h"
 
 using namespace Eigen;
 
-CaptureTrapezium::CaptureTrapezium(void)
+AOITrapezium::AOITrapezium(void)
 {
 	cornerLengthPercentage_ = 0.05;
 	pts_[0] = pts_[1] = pts_[2] = pts_[3] = cvPoint2D32f(0.0, 0.0);
 }
 
 
-CaptureTrapezium::~CaptureTrapezium(void)
+AOITrapezium::~AOITrapezium(void)
 {
 }
 
-void CaptureTrapezium::finishCreating() {
+void AOITrapezium::finishCreating() {
 	pts_[0] = cvPoint2D32f(rect_.x, rect_.y);
 	pts_[1] = cvPoint2D32f(rect_.x+rect_.width, rect_.y);
 	pts_[2] = cvPoint2D32f(rect_.x+rect_.width, rect_.y+rect_.height);
 	pts_[3] = cvPoint2D32f(rect_.x, rect_.y+rect_.height);
 }
 
-int CaptureTrapezium::actionController(CvPoint mousePointer) {
+int AOITrapezium::actionController(CvPoint mousePointer) {
 	if (this->contains(mousePointer)) {
 		RowVector2d mouse;
 		mouse << mousePointer.x, mousePointer.y;
@@ -54,7 +54,7 @@ int CaptureTrapezium::actionController(CvPoint mousePointer) {
 		return -1;
 }
 
-void CaptureTrapezium::moveCorner(int drawMethod, CvPoint vector) {
+void AOITrapezium::moveCorner(int drawMethod, CvPoint vector) {
 	CvPoint2D32f dest;
 	CvPoint2D32f newPoints[4];
 	switch (drawMethod) {
@@ -96,7 +96,7 @@ void CaptureTrapezium::moveCorner(int drawMethod, CvPoint vector) {
 	fixBoundaryRect();
 }
 
-void CaptureTrapezium::fixBoundaryRect() {
+void AOITrapezium::fixBoundaryRect() {
 	int x1, y1, x2, y2;
 	x1 = (int)minFour(pts_[0].x, pts_[1].x, pts_[2].x, pts_[3].x);
 	y1 = (int)minFour(pts_[0].y, pts_[1].y, pts_[2].y, pts_[3].y);
@@ -107,7 +107,7 @@ void CaptureTrapezium::fixBoundaryRect() {
 	rect_.height = y2 - y1;
 }
 
-void CaptureTrapezium::move(CvPoint vector) {
+void AOITrapezium::move(CvPoint vector) {
 	rect_.x += vector.x; rect_.y += vector.y;
 	pts_[0] = addVectors(pts_[0], vector);
 	pts_[1] = addVectors(pts_[1], vector);
@@ -115,19 +115,19 @@ void CaptureTrapezium::move(CvPoint vector) {
 	pts_[3] = addVectors(pts_[3], vector);
 }
 
-double CaptureTrapezium::maxFour(double a, double b, double c, double d) {
+double AOITrapezium::maxFour(double a, double b, double c, double d) {
 	return (a>b&&a>c&&a>d?a:b>c&&b>d?b:c>d?c:d);
 }
 
-double CaptureTrapezium::minFour(double a, double b, double c, double d) {
+double AOITrapezium::minFour(double a, double b, double c, double d) {
 	return (a<b&&a<c&&a<d?a:b<c&&b<d?b:c<d?c:d);
 }
 
-CvPoint2D32f CaptureTrapezium::getPoint(int it) {
+CvPoint2D32f AOITrapezium::getPoint(int it) {
 	return pts_[it];
 }
 
-bool CaptureTrapezium::isConvex(CvPoint2D32f pts[4]) {
+bool AOITrapezium::isConvex(CvPoint2D32f pts[4]) {
 	return (!areOnSameSide(pts[0], pts[2], pts[1], pts[3])) && 
 		(!areOnSameSide(pts[1], pts[3], pts[0], pts[2]));
 }

@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "CaptureRect.h"
+#include "AOIRect.h"
 #include "CvPoint_Wrapper.h"
 
-CaptureRect::CaptureRect(void)
+AOIRect::AOIRect(void)
 {
 	cornerAreaPercentage_ = 0.0025;
 	rect_ = cvRect(0, 0, 0, 0);
@@ -11,50 +11,50 @@ CaptureRect::CaptureRect(void)
 	thickness_ = 1;
 }
 
-void CaptureRect::setRect(int x, int y, int w, int h) {
+void AOIRect::setRect(int x, int y, int w, int h) {
 	rect_ = cvRect(x, y, w, h);
 }
 
-void CaptureRect::setRect(CvRect box) {
+void AOIRect::setRect(CvRect box) {
 	rect_ = box;
 }
 
-void CaptureRect::setColor(double r, double g, double b) {
+void AOIRect::setColor(double r, double g, double b) {
 	color_ = cvScalar(r, g, b);
 }
 
-void CaptureRect::setColor(CvScalar color) {
+void AOIRect::setColor(CvScalar color) {
 	color_ = color;
 }
 
-CvRect CaptureRect::getRect() {
+CvRect AOIRect::getRect() {
 	return rect_;
 }
 
-CvScalar CaptureRect::getColor() {
+CvScalar AOIRect::getColor() {
 	return color_;
 }
 
-CvPoint CaptureRect::getBottomRightCorner() {
+CvPoint AOIRect::getBottomRightCorner() {
 	fixNegativeWH();
 	return cvPoint(rect_.x + rect_.width, rect_.y + rect_.height);
 }
 
-int CaptureRect::getThickness() {
+int AOIRect::getThickness() {
 	return thickness_;
 }
 
-CaptureRect::~CaptureRect(void) {}
+AOIRect::~AOIRect(void) {}
 
-void CaptureRect::resize(int w, int h) {
+void AOIRect::resize(int w, int h) {
 	rect_.width = w; rect_.height = h;
 }
 
-void CaptureRect::resizeAddVector(CvPoint vector) {
+void AOIRect::resizeAddVector(CvPoint vector) {
 	rect_.width += vector.x; rect_.height += vector.y;
 }
 
-bool CaptureRect::contains(CvPoint p) {
+bool AOIRect::contains(CvPoint p) {
 	fixNegativeWH();
 	if (((rect_.x <= p.x) && (getBottomRightCorner().x >= p.x)) && 
 		((rect_.y <= p.y) && (getBottomRightCorner().y >= p.y)))
@@ -62,7 +62,7 @@ bool CaptureRect::contains(CvPoint p) {
 	return false;
 }
 
-void CaptureRect::fixNegativeWH() {
+void AOIRect::fixNegativeWH() {
 	if (rect_.width < 0) {
 		rect_.x += rect_.width;
 		rect_.width *= -1;
@@ -73,7 +73,7 @@ void CaptureRect::fixNegativeWH() {
 	}
 }
 
-void CaptureRect::darkenColor() {
+void AOIRect::darkenColor() {
 	if (colorOrg_ == NULL) {
 		colorOrg_ = new CvScalar;
 		*colorOrg_ = color_;
@@ -82,7 +82,7 @@ void CaptureRect::darkenColor() {
 	}
 }
 
-void CaptureRect::returnOriginalColor() {
+void AOIRect::returnOriginalColor() {
 	if (colorOrg_ != NULL) {
 		color_ = *colorOrg_;
 		delete colorOrg_;
@@ -90,11 +90,11 @@ void CaptureRect::returnOriginalColor() {
 	}
 }
 
-void CaptureRect::move(CvPoint vector) {
+void AOIRect::move(CvPoint vector) {
 	rect_.x += vector.x; rect_.y += vector.y;
 }
 
-int CaptureRect::actionController(CvPoint mousePointer) {
+int AOIRect::actionController(CvPoint mousePointer) {
 	if (this->contains(mousePointer)) {
 		double sqrtP = sqrt(cornerAreaPercentage_);
 		CvPoint tl = cvPoint(rect_.x,rect_.y);
@@ -125,7 +125,7 @@ int CaptureRect::actionController(CvPoint mousePointer) {
 		return -1;
 }
 
-void CaptureRect::moveCorner(int drawMethod, CvPoint vector) {
+void AOIRect::moveCorner(int drawMethod, CvPoint vector) {
 	CvPoint v_x, v_y;
 	switch (drawMethod) {
 	case RESIZE_BR:

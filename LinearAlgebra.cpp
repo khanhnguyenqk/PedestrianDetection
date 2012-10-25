@@ -37,16 +37,6 @@ MatrixXd findLineFormular2D(CvPoint2D32f a, CvPoint2D32f b) {
 }
 
 LineSegment2D findLineSegmentFormular2D(CvPoint2D32f a, CvPoint2D32f b) {
-	/*if (a.x == b.x && a.y == b.y) {
-		throw UNSOLVABLE;
-	}
-	LineSegment2D ret;
-	ret.line2D_ << a.y - b.y,
-		b.x - a.x,
-		(a.x - b.x)*a.y + a.x*(b.y - a.y);
-	ret.a_ = a;
-	ret.b_ = b;
-	return ret;*/
 	try {
 		LineSegment2D ret;
 		ret.line2D_ = findLineFormular2D(a, b);

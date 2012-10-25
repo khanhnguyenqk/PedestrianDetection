@@ -102,7 +102,7 @@ void AOI_ProcessorWindow::draw() {
 				drawImageOnMainWindow(clone_);
 				if (showSubwindows_) {
 					vector<IplImage*> motionTracked;
-					aois_ = extractAOI(currFrame_, captureRects_);
+					aois_ = extractAOI(currFrame_, AOIs_);
 					trackMotionAndIllustrate(aois_, motionTracked);
 					drawPictureOnSubwindows(motionTracked);
 					releaseImageVector(aois_);
@@ -166,7 +166,7 @@ bool AOI_ProcessorWindow::saveScreen() {
 	return true;
 }
 
-vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<CaptureRect> rs) {
+vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<AOIRect> rs) {
 	vector<IplImage*> ret;
 	int s = rs.size();
 
@@ -180,7 +180,7 @@ vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<Captur
 	return ret;
 }
 
-//vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<CaptureTrapezium> rs) {
+//vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<AOITrapezium> rs) {
 //	vector<IplImage*> ret;
 //	int s = rs.size();
 //
@@ -194,7 +194,7 @@ vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<Captur
 //	return ret;
 //}
 
-vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<CaptureTrapezium> ts) {
+vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<AOITrapezium> ts) {
 	vector<IplImage*> ret;
 	int s = ts.size();
 	LineSegment2D lines[4];
@@ -272,7 +272,7 @@ void AOI_ProcessorWindow::saveMarkedImage(IplImage* image) {
 		sprintf(filePath, "%s\\%010d.jpg", directoryName.c_str(), frameNum);
 		cvSaveImage(filePath, image);
 		// Save ts areas
-		vector<IplImage*> aois = extractAOI(currFrame_, captureRects_);
+		vector<IplImage*> aois = extractAOI(currFrame_, AOIs_);
 		for (unsigned i=0; i<aois.size(); i++)
 		{
 			sprintf(filePath, "%s\\%010d_%05d.jpg", directoryName.c_str(), frameNum, i);

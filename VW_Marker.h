@@ -3,27 +3,25 @@
 
 #include <vector>
 #include "videowindow.h"
-#include "CaptureTrapezium.h"
+#include "AOITrapezium.h"
 #include "ColorChooser.h"
 #include "MotionDetector.h"
 
 using namespace std;
 
-typedef vector<CaptureTrapezium>::iterator CR_Iterator;
+typedef vector<AOITrapezium>::iterator CR_Iterator;
 
 class VW_Marker :
 	public VideoWindow
 {
 protected:
 	bool cloneDone_;
-	CaptureTrapezium cr_;
-	vector<CaptureTrapezium> captureRects_;
+	vector<AOITrapezium> AOIs_;
 	CR_Iterator currentRect_;
 	int drawStatus_;
 	bool drawnOrChanged_;
 	CvPoint lastMousePoint_;
 	ColorChooser colorChooser_;
-	
 public:
 	VW_Marker(int x,int y , int w, int h,
 		const char* video=0, const char *L=0):VideoWindow(x,y,w,h,video,L) {
@@ -35,8 +33,8 @@ public:
 
 // Draw rect
 protected:
-	void drawAOI(IplImage* img, CaptureRect cr);
-	void drawAOI(IplImage* img, CaptureTrapezium ct);
+	void drawAOI(IplImage* img, AOIRect cr);
+	void drawAOI(IplImage* img, AOITrapezium ct);
 	void drawAllAOIs(IplImage* img);
 	int mouseDrawingAOIHandle(int event);
 	int mouseMovingAOIHandle(int event);
