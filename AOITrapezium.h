@@ -1,22 +1,22 @@
 #pragma once
-#include "AOIRect.h"
+#include "AreaOfInterest.h"
 
-enum DrawAction_Ext {
+enum DrawActionExtension {
 	P0 = 6,
 	P1, P2, P3
 };
 
-class AOITrapezium :
-	public AOIRect
+class AoiTrapezium :
+	public AreaOfInterest
 {
 protected:
 	double cornerLengthPercentage_;
 	CvPoint2D32f pts_[4];
 public:
-	AOITrapezium(void);
-	virtual ~AOITrapezium(void);
+	AoiTrapezium(void);
+	virtual ~AoiTrapezium(void);
 protected:
-	void fixBoundaryRect();
+	void fixRectangleBoundary();
 	double maxFour(double a, double b, double c, double d);
 	double minFour(double a, double b, double c, double d);
 public:

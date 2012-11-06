@@ -9,7 +9,7 @@
 #include "CvPoint_Wrapper.h"
 #include "MotionDetector.h"
 
-VW_Marker::~VW_Marker(void)
+VideoWindowMarker::~VideoWindowMarker(void)
 {
 	for (unsigned i=0; i<AOIs_.size(); i++) {
 		delete AOIs_[i];
@@ -17,7 +17,7 @@ VW_Marker::~VW_Marker(void)
 	AOIs_.clear();
 }
 
-int VW_Marker::handle(int event) {
+int VideoWindowMarker::handle(int event) {
 	if (!videoInitiated_)
 		return VideoWindow::handle(event);
 	int x;
@@ -68,16 +68,16 @@ int VW_Marker::handle(int event) {
 	return VideoWindow::handle(event);
 }
 
-void VW_Marker::drawAllAOIs(IplImage* img) {
+void VideoWindowMarker::drawAllAOIs(IplImage* img) {
 	CR_Iterator it = AOIs_.begin();
 	for (;it != AOIs_.end(); it++)
 		(*it)->drawSelfOnImage(img);
 }
 
-int VW_Marker::mouseDrawingAOIHandle(int event) {
+int VideoWindowMarker::mouseDrawingAOIHandle(int event) {
 	int x = getRelativeMouseX(Fl::event_x());
 	int y = getRelativeMouseY(Fl::event_y());
-	AOIRect *aoi = new AOITrapezium;
+	AreaOfInterest *aoi = new AoiTrapezium;
 	switch (event) {
 
 	case FL_PUSH:
@@ -106,7 +106,7 @@ int VW_Marker::mouseDrawingAOIHandle(int event) {
 	}
 }
 
-int VW_Marker::mouseMovingAOIHandle(int event) {
+int VideoWindowMarker::mouseMovingAOIHandle(int event) {
 	int x = getRelativeMouseX(Fl::event_x());
 	int y = getRelativeMouseY(Fl::event_y());
 	CvPoint mousePoint = cvPoint(x, y);
@@ -136,7 +136,7 @@ int VW_Marker::mouseMovingAOIHandle(int event) {
 	}
 }
 
-int VW_Marker::mouseResizeAOIHandle(int event) {
+int VideoWindowMarker::mouseResizeAOIHandle(int event) {
 	int x = getRelativeMouseX(Fl::event_x());
 	int y = getRelativeMouseY(Fl::event_y());
 	CvPoint mousePoint = cvPoint(x, y);
@@ -167,7 +167,7 @@ int VW_Marker::mouseResizeAOIHandle(int event) {
 	}
 }
 
-void VW_Marker::chooseDrawAction(int xMouse, int yMouse) {
+void VideoWindowMarker::chooseDrawAction(int xMouse, int yMouse) {
 	if (drawStatus_ == -1) {
 		if (AOIs_.empty()) {
 			drawStatus_ = NEW_RECT;
@@ -179,7 +179,7 @@ void VW_Marker::chooseDrawAction(int xMouse, int yMouse) {
 			if (useRect_)
 				drawStatus_ = (*it)->actionController(p);
 			else
-				drawStatus_ = ((AOITrapezium*)*it)->actionController(p);
+				drawStatus_ = ((AoiTrapezium*)*it)->actionController(p);
 			if (drawStatus_ != -1) {
 				currentAOI_ = it;
 				return;
@@ -194,7 +194,7 @@ void VW_Marker::chooseDrawAction(int xMouse, int yMouse) {
 		drawStatus_ = NEW_RECT;
 }
 
-string VW_Marker::getSaveDirectory(const char* fileName) {
+string VideoWindowMarker::getSaveDirectory(const char* fileName) {
 	int pos;
 	string ret = string(fileName);
 	pos = ret.find_last_of("\\");
@@ -203,7 +203,7 @@ string VW_Marker::getSaveDirectory(const char* fileName) {
 	return ret;
 }
 
-bool VW_Marker::setDrawStatus(int status) {
+bool VideoWindowMarker::setDrawStatus(int status) {
 	if (status==NEW_RECT) {
 		drawStatus_ = status;
 		return true;
@@ -211,7 +211,7 @@ bool VW_Marker::setDrawStatus(int status) {
 	return false;
 }
 
-bool VW_Marker::deleteCurrentAOI() {
+bool VideoWindowMarker::deleteCurrentAOI() {
 	if (AOIs_.empty())
 		return true;
 	delete *currentAOI_;
@@ -220,7 +220,7 @@ bool VW_Marker::deleteCurrentAOI() {
 	return true;
 }
 
-bool VW_Marker::deleteAllAOIs() {
+bool VideoWindowMarker::deleteAllAOIs() {
 	if (AOIs_.empty())
 		return true;
 	for (unsigned i=0; i<AOIs_.size(); i++) {
@@ -231,7 +231,7 @@ bool VW_Marker::deleteAllAOIs() {
 	return true;
 }
 
-bool VW_Marker::cloneAndDrawAOIs() {
+bool VideoWindowMarker::cloneAndDrawAOIs() {
 	if (currFrame_ == NULL)
 		return false;
 	darkenNonCurrent();
@@ -242,7 +242,7 @@ bool VW_Marker::cloneAndDrawAOIs() {
 	return true;
 }
 
-void VW_Marker::darkenNonCurrent() {
+void VideoWindowMarker::darkenNonCurrent() {
 	CR_Iterator it = AOIs_.begin();
 	for (;it != AOIs_.end(); it++) {
 		if (it != currentAOI_) {
@@ -253,7 +253,7 @@ void VW_Marker::darkenNonCurrent() {
 	}
 }
 
-int VW_Marker::getRelativeMouseX(int x) {
+int VideoWindowMarker::getRelativeMouseX(int x) {
 	double ox,x1;
 	ox=xPanRatio_*(1.0+zoomRatio_); x1=ox-zoomRatio_; x1=(x1+1)/2;
 	double ret = (((double)x - x1*this->w())*
@@ -261,7 +261,7 @@ int VW_Marker::getRelativeMouseX(int x) {
 	return (int)ret;
 }
 
-int VW_Marker::getRelativeMouseY(int y) {
+int VideoWindowMarker::getRelativeMouseY(int y) {
 	double oy,y1;
 	oy=-yPanRatio_*(1.0+zoomRatio_); y1=oy+zoomRatio_; y1=(-y1+1)/2;
 	double ret = (((double)y - y1*this->h())*
@@ -269,7 +269,7 @@ int VW_Marker::getRelativeMouseY(int y) {
 	return (int)ret;
 }
 
-bool VW_Marker::nextAOI() {
+bool VideoWindowMarker::nextAOI() {
 	if (AOIs_.empty())
 		return false;
 	currentAOI_ ++;
@@ -278,7 +278,7 @@ bool VW_Marker::nextAOI() {
 	return true;
 }
 
-bool VW_Marker::prevAOI() {
+bool VideoWindowMarker::prevAOI() {
 	if (AOIs_.empty())
 		return false;
 	if (currentAOI_ == AOIs_.begin())
@@ -288,7 +288,7 @@ bool VW_Marker::prevAOI() {
 }
 
 
-void VW_Marker::draw() {
+void VideoWindowMarker::draw() {
 	if (videoInitiated_) {
 		if ((playStatus_ == PLAY)) {
 			currFrame_ = cvQueryFrame(videoCapture_);
@@ -320,10 +320,10 @@ void VW_Marker::draw() {
 	updateDependences();
 }
 
-void VW_Marker::useRectangle(bool b) {
+void VideoWindowMarker::useRectangle(bool b) {
 	useRect_ = b;
 }
 
-bool VW_Marker::isUsingRectangle() {
+bool VideoWindowMarker::isUsingRectangle() {
 	return useRect_;
 }

@@ -20,7 +20,7 @@ public:
   Fl_Value_Slider *xPan_;
   Fl_Value_Slider *yPan_;
   Fl_Value_Slider *zoom_;
-  AOI_ProcessorWindow *aoiProcessorWindow;
+  AoiProcessorWindow *aoiProcessorWindow;
   Fl_Slider *slider_;
   Fl_Button *stop_;
   Fl_Button *play_;

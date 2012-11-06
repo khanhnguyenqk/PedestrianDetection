@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include <stdio.h>
 #include <string.h>
-#include <string>
 #include <iostream>
 #include <direct.h>
 #include <sys/stat.h>
@@ -9,7 +8,7 @@
 #include "CvPoint_Wrapper.h"
 #include "LinearAlgebra.h"
 
-AOI_ProcessorWindow::~AOI_ProcessorWindow(void)
+AoiProcessorWindow::~AoiProcessorWindow(void)
 {
 	releaseImageVector(aois_);
 
@@ -20,7 +19,7 @@ AOI_ProcessorWindow::~AOI_ProcessorWindow(void)
 	cvDestroyAllWindows();
 }
 
-int AOI_ProcessorWindow::handle(int event) {
+int AoiProcessorWindow::handle(int event) {
 	if (!videoInitiated_)
 		return VideoWindow::handle(event);
 
@@ -30,10 +29,10 @@ int AOI_ProcessorWindow::handle(int event) {
 			return 1;
 		}
 	}
-	return VW_Marker::handle(event);
+	return VideoWindowMarker::handle(event);
 }
 
-void AOI_ProcessorWindow::subwindowManage(int num) {
+void AoiProcessorWindow::subwindowManage(int num) {
 	int numWindows = windowNames_.size();
 	// Create more if needed
 	if (num > numWindows) {
@@ -57,7 +56,7 @@ void AOI_ProcessorWindow::subwindowManage(int num) {
 	}
 }
 
-void AOI_ProcessorWindow::motionDetectorManage(int size) {
+void AoiProcessorWindow::motionDetectorManage(int size) {
 	int numDetector = motionDetectors_.size();
 	
 	// If changed, remove all. Create brand new.
@@ -71,25 +70,26 @@ void AOI_ProcessorWindow::motionDetectorManage(int size) {
 	}
 }
 
-void AOI_ProcessorWindow::drawPictureOnSubwindows(vector<IplImage*> images) {
+void AoiProcessorWindow::drawPictureOnSubwindows(vector<IplImage*> images) {
 	subwindowManage(images.size());
 	if (images.size() != windowNames_.size()) {
 		/*fl_alert("Number of cropped areas does not match number on windows created.");*/
 		return;
 	}
 	for (unsigned i=0; i<images.size(); i++) {
+    cvNamedWindow(windowNames_[i], CV_WINDOW_NORMAL);
 		cvShowImage(windowNames_[i], images[i]);
 	}
 }
 
-void AOI_ProcessorWindow::releaseImageVector(vector<IplImage*> &images) {
+void AoiProcessorWindow::releaseImageVector(vector<IplImage*> &images) {
 	for (unsigned i=0; i<images.size(); i++) {
 		cvReleaseImage(&images[i]);
 	}
 	images.clear();
 }
 
-void AOI_ProcessorWindow::draw() {
+void AoiProcessorWindow::draw() {
 	if (videoInitiated_) {
 		if ((playStatus_ == PLAY)) {
 			currFrame_ = cvQueryFrame(videoCapture_);
@@ -100,13 +100,25 @@ void AOI_ProcessorWindow::draw() {
 			else {
 				cloneAndDrawAOIs();
 				drawImageOnMainWindow(clone_);
-				if (showSubwindows_) {
+				if (extract_) {
 					vector<IplImage*> motionTracked;
 					aois_ = extractAOI(currFrame_, AOIs_);
 					trackMotionAndIllustrate(aois_, motionTracked);
 					drawPictureOnSubwindows(motionTracked);
 					releaseImageVector(aois_);
 					releaseImageVector(motionTracked);
+				} else {
+					// TODO:
+					if (!wholeMotionDetector_) {
+						wholeMotionDetector_ = new MotionDetector(cvSize(currFrame_->width,
+												currFrame_->height));
+						cvNamedWindow("Tracked", CV_WINDOW_NORMAL);
+					} else {
+						IplImage *ret = wholeMotionDetector_->processImage(currFrame_);
+            cvNamedWindow("Tracked", CV_WINDOW_NORMAL);
+						cvShowImage("Tracked", ret);
+						cvReleaseImage(&ret);
+					}
 				}
 			}
 		} else if ((playStatus_ == PAUSE)) {
@@ -129,7 +141,7 @@ void AOI_ProcessorWindow::draw() {
 	updateDependences();
 }
 
-void AOI_ProcessorWindow::clearMotionDetectorsMemories() {
+void AoiProcessorWindow::clearMotionDetectorsMemories() {
 	int numDetector = motionDetectors_.size();
 	for (int i = 0; i<numDetector; i++) {
 		delete motionDetectors_[i];
@@ -137,7 +149,7 @@ void AOI_ProcessorWindow::clearMotionDetectorsMemories() {
 	motionDetectors_.clear();
 }
 
-void AOI_ProcessorWindow::trackMotionAndIllustrate(vector<IplImage*> src, vector<IplImage*> &dst) 
+void AoiProcessorWindow::trackMotionAndIllustrate(vector<IplImage*> src, vector<IplImage*> &dst) 
 {
 	motionDetectorManage(src.size());
 	for (unsigned i=0; i<src.size(); i++) {
@@ -146,7 +158,7 @@ void AOI_ProcessorWindow::trackMotionAndIllustrate(vector<IplImage*> src, vector
 	}
 }
 
-bool AOI_ProcessorWindow::saveScreen() {
+bool AoiProcessorWindow::saveScreen() {
 	if ((clone_ == NULL) && (currFrame_ == NULL))
 		return false;
 	if (playStatus_==PAUSE) {
@@ -166,7 +178,7 @@ bool AOI_ProcessorWindow::saveScreen() {
 	return true;
 }
 
-vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<AOIRect*> aois) {
+vector<IplImage*> AoiProcessorWindow::extractAOI(IplImage *image, vector<AreaOfInterest*> aois) {
 	if (useRect_) {
 		vector<IplImage*> ret;
 		int s = aois.size();
@@ -233,8 +245,8 @@ vector<IplImage*> AOI_ProcessorWindow::extractAOI(IplImage *image, vector<AOIRec
 	}
 }
 
-void AOI_ProcessorWindow::saveMarkedImage(IplImage* image) {
-	string directoryName = VW_Marker::getSaveDirectory(videoName_);
+void AoiProcessorWindow::saveMarkedImage(IplImage* image) {
+	string directoryName = VideoWindowMarker::getSaveDirectory(videoName_);
 	bool diretoryExists = false;
 
 	struct stat st;
@@ -270,7 +282,7 @@ void AOI_ProcessorWindow::saveMarkedImage(IplImage* image) {
 	}
 }
 
-void AOI_ProcessorWindow::setElements(IplImage **image, CvPoint from, CvPoint to, uchar v) {
+void AoiProcessorWindow::setElements(IplImage **image, CvPoint from, CvPoint to, uchar v) {
 	// Check some conditions
 	if (from.x == to.x && from.y == to.y)
 		return;

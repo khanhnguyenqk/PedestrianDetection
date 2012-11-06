@@ -5,7 +5,7 @@
 
 enum DrawAction {NEW_RECT, MOVE_RECT, RESIZE_TL, RESIZE_TR, RESIZE_BR, RESIZE_BL};
 
-class AOIRect
+class AreaOfInterest
 {
 protected:
 	// Area percentage of the corner compared to the total area
@@ -15,8 +15,8 @@ protected:
 	CvScalar* colorOrg_;
 	int thickness_;
 public:
-	AOIRect(void);
-	~AOIRect(void);
+	AreaOfInterest(void);
+	~AreaOfInterest(void);
 protected:
 	
 public:

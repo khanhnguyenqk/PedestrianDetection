@@ -86,7 +86,7 @@ VideoPlayerUI::VideoPlayerUI() {
         zoom_->value(1);
         zoom_->textsize(14);
       } // Fl_Value_Slider* zoom_
-      { aoiProcessorWindow = new AOI_ProcessorWindow(xVideoWindow, yVideoWindow, wVideoWindow, hVideoWindow, 
+      { aoiProcessorWindow = new AoiProcessorWindow(xVideoWindow, yVideoWindow, wVideoWindow, hVideoWindow, 
 										NULL, "Video Window");
         aoiProcessorWindow->box(FL_NO_BOX);
         aoiProcessorWindow->color(FL_BACKGROUND_COLOR);

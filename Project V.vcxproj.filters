@@ -60,7 +60,25 @@
     <ClInclude Include="AOITrapezium.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AOIRect.h">
+    <ClInclude Include="AoiAndProcessorContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AreaOfInterest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IBGS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LBMixtureOfGaussians.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BGModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BGModelMog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExLBMixtureOfGaussians.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,7 +116,22 @@
     <ClCompile Include="AOITrapezium.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AOIRect.cpp">
+    <ClCompile Include="AoiAndProcessorContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AreaOfInterest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LBMixtureOfGaussians.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BGModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BGModelMog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExLBMixtureOfGaussians.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

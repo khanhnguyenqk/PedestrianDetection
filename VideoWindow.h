@@ -73,13 +73,18 @@ public:
 		videoDetails_ = NULL;
 		if (video)
 			initiateVideo(video);
-		Fl::add_timeout(1.0/playSpeed_, timerCB, (void*)this);
+
+    // TODO: should change to multi threaded instead.
+		// Fl::add_timeout(1.0/playSpeed_, timerCB, (void*)this);
+    Fl::add_timeout(1.0 , timerCB, (void*)this);
 	}
 	virtual ~VideoWindow(void);
 	static void timerCB(void *userData) {
 		VideoWindow* w = (VideoWindow*)userData;
 		w->redraw();
-		Fl::repeat_timeout(1.0/playSpeed_ + LAG_FIX, timerCB, userData);
+    // TODO: should change to multi threaded instead.
+		// Fl::repeat_timeout(1.0/playSpeed_ + LAG_FIX, timerCB, userData);
+    Fl::repeat_timeout(1.0, timerCB, userData);
 	}
 	void initiateVideo( const char* video );
 	virtual int handle(int event) {return Fl_Gl_Window::handle(event);}

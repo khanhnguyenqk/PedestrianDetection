@@ -36,6 +36,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="OpenCV_Debug.props" />
     <Import Project="Eigen Debug.props" />
+    <Import Project="Bgs.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -80,12 +81,18 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AoiAndProcessorContainer.h" />
     <ClInclude Include="AOI_Processor.h" />
+    <ClInclude Include="BGModel.h" />
+    <ClInclude Include="BGModelMog.h" />
     <ClInclude Include="Boundary.h" />
-    <ClInclude Include="AOIRect.h" />
+    <ClInclude Include="AreaOfInterest.h" />
     <ClInclude Include="AOITrapezium.h" />
     <ClInclude Include="ColorChooser.h" />
     <ClInclude Include="CvPoint_Wrapper.h" />
+    <ClInclude Include="ExLBMixtureOfGaussians.h" />
+    <ClInclude Include="IBGS.h" />
+    <ClInclude Include="LBMixtureOfGaussians.h" />
     <ClInclude Include="LinearAlgebra.h" />
     <ClInclude Include="MotionDetector.h" />
     <ClInclude Include="Project V.h" />
@@ -97,11 +104,16 @@
     <ClInclude Include="VW_Marker.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AoiAndProcessorContainer.cpp" />
     <ClCompile Include="AOI_Processor.cpp" />
+    <ClCompile Include="BGModel.cpp" />
+    <ClCompile Include="BGModelMog.cpp" />
     <ClCompile Include="Boundary.cpp" />
-    <ClCompile Include="AOIRect.cpp" />
+    <ClCompile Include="AreaOfInterest.cpp" />
     <ClCompile Include="AOITrapezium.cpp" />
     <ClCompile Include="ColorChooser.cpp" />
+    <ClCompile Include="ExLBMixtureOfGaussians.cpp" />
+    <ClCompile Include="LBMixtureOfGaussians.cpp" />
     <ClCompile Include="LinearAlgebra.cpp" />
     <ClCompile Include="MotionDetector.cpp" />
     <ClCompile Include="Project V.cpp" />
