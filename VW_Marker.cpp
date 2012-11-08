@@ -1,13 +1,5 @@
 #include "stdafx.h"
-#include <stdio.h>
-#include <string.h>
-#include <string>
-#include <iostream>
-#include <direct.h>
-#include <sys/stat.h>
 #include "VW_Marker.h"
-#include "CvPoint_Wrapper.h"
-#include "MotionDetector.h"
 
 VideoWindowMarker::~VideoWindowMarker(void)
 {

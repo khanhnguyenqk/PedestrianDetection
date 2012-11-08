@@ -2,6 +2,13 @@
 #define VW_MARKER_H_
 
 #include <vector>
+#include <stdio.h>
+#include <string.h>
+#include <string>
+#include <iostream>
+#include <direct.h>
+#include <sys/stat.h>
+#include "CvPoint_Wrapper.h"
 #include "videowindow.h"
 #include "AOITrapezium.h"
 #include "ColorChooser.h"

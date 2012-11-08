@@ -7,6 +7,7 @@
 #include "VideoPlayerUI.h"
 #include <Eigen/Dense>
 #include "LinearAlgebra.h"
+#include "ForegroundObject.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,6 +17,7 @@ using namespace std;
 using namespace Eigen;
 
 int main(int argc, char** argv) {
+
 	Fl::visual(FL_RGB);
 	VideoPlayerUI* ui = new VideoPlayerUI;
 	ui->mainWindow_->show(1, NULL);

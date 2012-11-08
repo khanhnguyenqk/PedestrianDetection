@@ -81,7 +81,6 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AoiAndProcessorContainer.h" />
     <ClInclude Include="AOI_Processor.h" />
     <ClInclude Include="BGModel.h" />
     <ClInclude Include="BGModelMog.h" />
@@ -91,10 +90,11 @@
     <ClInclude Include="ColorChooser.h" />
     <ClInclude Include="CvPoint_Wrapper.h" />
     <ClInclude Include="ExLBMixtureOfGaussians.h" />
+    <ClInclude Include="ForegroundObject.h" />
     <ClInclude Include="IBGS.h" />
     <ClInclude Include="LBMixtureOfGaussians.h" />
     <ClInclude Include="LinearAlgebra.h" />
-    <ClInclude Include="MotionDetector.h" />
+    <ClInclude Include="ObjectTracker.h" />
     <ClInclude Include="Project V.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -104,7 +104,6 @@
     <ClInclude Include="VW_Marker.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AoiAndProcessorContainer.cpp" />
     <ClCompile Include="AOI_Processor.cpp" />
     <ClCompile Include="BGModel.cpp" />
     <ClCompile Include="BGModelMog.cpp" />
@@ -113,9 +112,10 @@
     <ClCompile Include="AOITrapezium.cpp" />
     <ClCompile Include="ColorChooser.cpp" />
     <ClCompile Include="ExLBMixtureOfGaussians.cpp" />
+    <ClCompile Include="ForegroundObject.cpp" />
     <ClCompile Include="LBMixtureOfGaussians.cpp" />
     <ClCompile Include="LinearAlgebra.cpp" />
-    <ClCompile Include="MotionDetector.cpp" />
+    <ClCompile Include="ObjectTracker.cpp" />
     <ClCompile Include="Project V.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

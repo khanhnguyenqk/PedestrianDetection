@@ -4,7 +4,6 @@ class ExLBMixtureOfGaussians :
   public LBMixtureOfGaussians
 {
 public:
-  ExLBMixtureOfGaussians(void):LBMixtureOfGaussians() {}
+  ExLBMixtureOfGaussians(void);
   virtual ~ExLBMixtureOfGaussians(void);
 };
-

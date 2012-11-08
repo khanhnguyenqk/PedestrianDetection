@@ -1,12 +1,5 @@
 #include "StdAfx.h"
-#include <stdio.h>
-#include <string.h>
-#include <iostream>
-#include <direct.h>
-#include <sys/stat.h>
 #include "AOI_Processor.h"
-#include "CvPoint_Wrapper.h"
-#include "LinearAlgebra.h"
 
 AoiProcessorWindow::~AoiProcessorWindow(void)
 {
@@ -64,7 +57,7 @@ void AoiProcessorWindow::motionDetectorManage(int size) {
 		clearMotionDetectorsMemories();
 		// Create more if needed
 		for (int i=0; i < size; i++) {
-			MotionDetector *m = new MotionDetector(cvSize(aois_[i]->width, aois_[i]->height));
+			ObjectTracker *m = new ObjectTracker(cvSize(aois_[i]->width, aois_[i]->height));
 			motionDetectors_.push_back(m);
 		}
 	}
@@ -110,11 +103,12 @@ void AoiProcessorWindow::draw() {
 				} else {
 					// TODO:
 					if (!wholeMotionDetector_) {
-						wholeMotionDetector_ = new MotionDetector(cvSize(currFrame_->width,
+						wholeMotionDetector_ = new ObjectTracker(cvSize(currFrame_->width,
 												currFrame_->height));
 						cvNamedWindow("Tracked", CV_WINDOW_NORMAL);
 					} else {
-						IplImage *ret = wholeMotionDetector_->processImage(currFrame_);
+						IplImage *ret = NULL;
+            wholeMotionDetector_->processImage(currFrame_, ret);
             cvNamedWindow("Tracked", CV_WINDOW_NORMAL);
 						cvShowImage("Tracked", ret);
 						cvReleaseImage(&ret);
@@ -153,7 +147,8 @@ void AoiProcessorWindow::trackMotionAndIllustrate(vector<IplImage*> src, vector<
 {
 	motionDetectorManage(src.size());
 	for (unsigned i=0; i<src.size(); i++) {
-		IplImage *img = motionDetectors_[i]->processImage(src[i]);
+		IplImage *img;
+    motionDetectors_[i]->processImage(src[i], img);
 		dst.push_back(img);
 	}
 }

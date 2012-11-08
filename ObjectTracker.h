@@ -13,20 +13,28 @@
 using namespace std;
 using namespace cv;
 
-class MotionDetector
+class ObjectTracker
 {
 protected:
+  int openIteration_, closeIteration_;
 	CvSize imgSize_;
 	bool first_;
+  IplImage *mask3C_, *mask_, *temp_;
 
-// Mixture of Gaussians
   ExLBMixtureOfGaussians *mog_;
-//
-//
-	CvSeq* findContours(IplImage *singleChannelPic);
-public:
-	MotionDetector(CvSize imgSize);
-	virtual ~MotionDetector(void);
 
-	IplImage* processImage(IplImage* frame);
+	CvSeq* findContours(IplImage *singleChannelPic);
+  void findConnectedComponents(
+    IplImage* mask,
+    int poly1_hull2 = 0,
+    float perimScale = 0.25,
+    int* num = NULL,
+    CvRect* bbs = NULL,
+    CvPoint* centers = NULL
+    );
+public:
+	ObjectTracker(CvSize imgSize);
+	virtual ~ObjectTracker(void);
+
+  void processImage(IplImage* frame, IplImage* output);
 };

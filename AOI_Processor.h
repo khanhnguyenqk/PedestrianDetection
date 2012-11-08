@@ -1,14 +1,21 @@
 #pragma once
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+#include <direct.h>
+#include <sys/stat.h>
+#include "LinearAlgebra.h"
+#include "CvPoint_Wrapper.h"
 #include "vw_marker.h"
-#include "MotionDetector.h"
+#include "ObjectTracker.h"
 
 class AoiProcessorWindow :
 	public VideoWindowMarker
 {
 protected:
 	// Cropped Area of Interest (AOI) from drawn box
-	MotionDetector* wholeMotionDetector_;
-	vector<MotionDetector*> motionDetectors_;
+	ObjectTracker* wholeMotionDetector_;
+	vector<ObjectTracker*> motionDetectors_;
 	vector<IplImage*> aois_;
 	vector<char*> windowNames_;
 	bool extract_;
@@ -34,6 +41,7 @@ public:
 	bool saveScreen();
 	vector<IplImage*> extractAOI(IplImage *image, vector<AreaOfInterest*> rs);
 	virtual int handle(int event);
+
 
 // Utilities
 public:
