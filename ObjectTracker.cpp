@@ -14,7 +14,7 @@ ObjectTracker::~ObjectTracker(void)
 {
 }
 
-void ObjectTracker::processImage( IplImage* frame, IplImage* output )
+void ObjectTracker::processImage( IplImage* frame, IplImage** output )
 {
   imgSize_ = cvSize(frame->width, frame->height);
   if (first_) {
@@ -24,19 +24,16 @@ void ObjectTracker::processImage( IplImage* frame, IplImage* output )
     first_ = false;
   }
 
-  if (output == NULL) {
-    output = cvCreateImage(imgSize_, IPL_DEPTH_8U, 3);
+  if (*output == NULL) {
+    *output = cvCreateImage(imgSize_, IPL_DEPTH_8U, 3);
   }
-  cvCopy(frame, output);
+  cvCopy(frame, *output);
   cvCopy(frame, temp_);
   cvSmooth(temp_, temp_, CV_GAUSSIAN);
   mog_->process((cv::Mat)temp_, (cv::Mat)mask3C_);
   cvCvtColor(mask3C_, mask_, CV_RGB2GRAY);
 
   cvShowImage("1", mask_);
-  /*cvDilate(mask_, mask_, 0, openIteration_);
-  cvErode(mask_, mask_, 0, closeIteration_);
-  cvShowImage("2", mask_);*/
   cvMorphologyEx(mask_, mask_, 0, 0, CV_MOP_OPEN, openIteration_);
   cvShowImage("2", mask_);
   cvMorphologyEx(mask_, mask_, 0, 0, CV_MOP_CLOSE, closeIteration_);

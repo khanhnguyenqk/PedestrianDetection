@@ -108,7 +108,7 @@ void AoiProcessorWindow::draw() {
 						cvNamedWindow("Tracked", CV_WINDOW_NORMAL);
 					} else {
 						IplImage *ret = NULL;
-            wholeMotionDetector_->processImage(currFrame_, ret);
+            wholeMotionDetector_->processImage(currFrame_, &ret);
             cvNamedWindow("Tracked", CV_WINDOW_NORMAL);
 						cvShowImage("Tracked", ret);
 						cvReleaseImage(&ret);
@@ -148,7 +148,7 @@ void AoiProcessorWindow::trackMotionAndIllustrate(vector<IplImage*> src, vector<
 	motionDetectorManage(src.size());
 	for (unsigned i=0; i<src.size(); i++) {
 		IplImage *img;
-    motionDetectors_[i]->processImage(src[i], img);
+    motionDetectors_[i]->processImage(src[i], &img);
 		dst.push_back(img);
 	}
 }

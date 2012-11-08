@@ -36,5 +36,5 @@ public:
 	ObjectTracker(CvSize imgSize);
 	virtual ~ObjectTracker(void);
 
-  void processImage(IplImage* frame, IplImage* output);
+  void processImage(IplImage* frame, IplImage** output);
 };

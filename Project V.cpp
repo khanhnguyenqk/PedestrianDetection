@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 	Fl::visual(FL_RGB);
 	VideoPlayerUI* ui = new VideoPlayerUI;
 	ui->mainWindow_->show(1, NULL);
-	ui->setFilePath("C:\\Materials\\6r.avi");
+	ui->setFilePath("C:\\Materials\\5d.avi");
 
 	Fl::run();
 
