@@ -8,7 +8,9 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/video/background_segm.hpp>
+#include <vector>
 #include "ExLBMixtureOfGaussians.h"
+#include "ForegroundObject.h"
 
 using namespace std;
 using namespace cv;
@@ -16,22 +18,33 @@ using namespace cv;
 class ObjectTracker
 {
 protected:
+  // Foreground detection
   int openIteration_, closeIteration_;
 	CvSize imgSize_;
 	bool first_;
   IplImage *mask3C_, *mask_, *temp_;
-
   ExLBMixtureOfGaussians *mog_;
+  CvSeq* findContours(IplImage *singleChannelPic);
+  double perimScaleThrhold_;
 
-	CvSeq* findContours(IplImage *singleChannelPic);
+  // Objects tracker
+  double matchThreshold_;
+  double numObjs_;
+  vector<ForegroundObject*> currObjs_;
+  vector<ForegroundObject*> pastObjs_;
+  double **objsM_;
+  CvPoint *centersStat_;
+  CvRect *rectsStat_;
+  int numStat_, count_;
   void findConnectedComponents(
     IplImage* mask,
     int poly1_hull2 = 0,
-    float perimScale = 0.25,
+    double perimScale = 0.25,
     int* num = NULL,
     CvRect* bbs = NULL,
     CvPoint* centers = NULL
     );
+  void matchObjects(CvPoint *newCenters, int size);
 public:
 	ObjectTracker(CvSize imgSize);
 	virtual ~ObjectTracker(void);

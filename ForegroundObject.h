@@ -12,11 +12,14 @@ using namespace cv;
 class ForegroundObject
 {
 protected:
+
+  int alignIteration_;
+  KalmanFilter *kalman_;
+public:
   string label_;
   vector<CvPoint> positionHistory_;
   vector<CvPoint> predictedPositionHistory_;
   vector<CvPoint> correctedPositionHistory_;
-  KalmanFilter *kalman_;
 public:
   static double speedUpdateRate_;
   ForegroundObject(string label, CvPoint position);

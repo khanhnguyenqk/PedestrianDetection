@@ -4,12 +4,15 @@
 double ForegroundObject::speedUpdateRate_ = 0.5;
 
 ForegroundObject::ForegroundObject(string label, CvPoint position) {
+  alignIteration_ = 12;
   label_ = label;
   positionHistory_.clear();
   predictedPositionHistory_.clear();
   correctedPositionHistory_.clear();
 
-  kalman_ = new KalmanFilter(4, 2);
+  positionHistory_.push_back(position);
+
+  kalman_ = new KalmanFilter(4, 2, 0);
   
   kalman_->statePre.at<float>(0) = position.x;
   kalman_->statePre.at<float>(1) = position.y;
@@ -21,6 +24,15 @@ ForegroundObject::ForegroundObject(string label, CvPoint position) {
   setIdentity(kalman_->processNoiseCov, Scalar::all(1e-4));
   setIdentity(kalman_->measurementNoiseCov, Scalar::all(1e-1));
   setIdentity(kalman_->errorCovPost, Scalar::all(.1));
+
+  // Align kalman predictions with the initial position
+  for (int i=0; i<alignIteration_; i++) {
+    Mat_<float> measurement(2,1);
+    measurement(0) = (float)position.x;
+    measurement(1) = (float)position.y;
+    kalman_->predict();
+    kalman_->correct(measurement);
+  }
 }
 
 ForegroundObject::~ForegroundObject(void)
