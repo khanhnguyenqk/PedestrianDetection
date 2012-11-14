@@ -29,9 +29,8 @@ protected:
 
   // Objects tracker
   double matchThreshold_;
-  double numObjs_;
+  long int numObjs_;
   vector<ForegroundObject*> currObjs_;
-  vector<ForegroundObject*> pastObjs_;
   double **objsM_;
   CvPoint *centersStat_;
   CvRect *rectsStat_;
@@ -45,6 +44,8 @@ protected:
     CvPoint* centers = NULL
     );
   void matchObjects(CvPoint *newCenters, int size);
+  void createNewObject(CvPoint center);
+  void removeObjects(vector<int> *iterators = NULL);
 public:
 	ObjectTracker(CvSize imgSize);
 	virtual ~ObjectTracker(void);

@@ -84,7 +84,6 @@
     <ClInclude Include="AOI_Processor.h" />
     <ClInclude Include="BGModel.h" />
     <ClInclude Include="BGModelMog.h" />
-    <ClInclude Include="Boundary.h" />
     <ClInclude Include="AreaOfInterest.h" />
     <ClInclude Include="AOITrapezium.h" />
     <ClInclude Include="ColorChooser.h" />
@@ -107,7 +106,6 @@
     <ClCompile Include="AOI_Processor.cpp" />
     <ClCompile Include="BGModel.cpp" />
     <ClCompile Include="BGModelMog.cpp" />
-    <ClCompile Include="Boundary.cpp" />
     <ClCompile Include="AreaOfInterest.cpp" />
     <ClCompile Include="AOITrapezium.cpp" />
     <ClCompile Include="ColorChooser.cpp" />

@@ -26,13 +26,15 @@ ForegroundObject::ForegroundObject(string label, CvPoint position) {
   setIdentity(kalman_->errorCovPost, Scalar::all(.1));
 
   // Align kalman predictions with the initial position
-  for (int i=0; i<alignIteration_; i++) {
+  for (int i=0; i<alignIteration_-1; i++) {
     Mat_<float> measurement(2,1);
     measurement(0) = (float)position.x;
     measurement(1) = (float)position.y;
     kalman_->predict();
     kalman_->correct(measurement);
   }
+  this->predictNextPosition();
+  this->correctPosition(position);
 }
 
 ForegroundObject::~ForegroundObject(void)

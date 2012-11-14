@@ -25,15 +25,5 @@ int main(int argc, char** argv) {
 
 	Fl::run();
 
-	/*RowVector3d a, b, c;
-	a << 3, 3, 0;
-	b << 4, 1, 0;
-	c << 3.5, 4, 0;
-	cout << a.cross(b) / a.dot(b) << endl;
-	cout << c.cross(b) / c.dot(b) << endl;
-	cout << (a.cross(b) / a.dot(b)).dot(c.cross(b) / c.dot(b)) << endl;
-	int i;
-	cin >> i;*/
-
 	return 0;
 }

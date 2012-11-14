@@ -30,9 +30,6 @@
     <ClInclude Include="Project V.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Boundary.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ColorChooser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -87,9 +84,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Project V.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Boundary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ColorChooser.cpp">

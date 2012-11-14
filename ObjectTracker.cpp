@@ -1,6 +1,34 @@
 #include "StdAfx.h"
 #include "ObjectTracker.h"
 
+// TODO: what the fuck are these messy functions. Fix them.
+void printMatrix(double **m, int rows, int cols) {
+  printf("\n");
+  for (int i=0; i<rows; i++) {
+    for (int j=0; j<cols; j++) {
+      printf("%10f\t", m[i][j]);
+    }
+    printf("\n");
+  }
+}
+// TODO: what the fuck are these messy functions. Fix them.
+void drawCross(IplImage *img, CvPoint center, int size, CvScalar color, int thickness = 1) {
+  cvLine(img, cvPoint(center.x+size, center.y+size),
+    cvPoint(center.x-size, center.y-size), color, 1);
+  cvLine(img, cvPoint(center.x+size, center.y-size),
+    cvPoint(center.x-size, center.y+size), color, 1);
+}
+// TODO: what the fuck are these messy functions. Fix them.
+void drawText(IplImage *img, const char *text, CvPoint at, CvScalar color, CvFont *font = NULL) {
+  if (!font) {
+    CvFont font1;
+    cvInitFont(&font1, CV_FONT_HERSHEY_DUPLEX, 1.0, 0.8, 0.2, 1, 8);
+    cvPutText(img, text, at, &font1, color);
+  } else {
+    cvPutText(img, text, at, font, color);
+  }
+}
+
 ObjectTracker::ObjectTracker(CvSize imgSize)
 {
   openIteration_ = 1;
@@ -10,7 +38,7 @@ ObjectTracker::ObjectTracker(CvSize imgSize)
   numStat_ = 100;
   numObjs_ = 0;
   perimScaleThrhold_ = 0.05;
-  matchThreshold_ = 0.11;
+  matchThreshold_ = 0.09;
 }
 
 
@@ -18,12 +46,7 @@ ObjectTracker::~ObjectTracker(void)
 {
 }
 
-void drawCross(IplImage *img, CvPoint center, int size, CvScalar color, int thickness = 1) {
-  cvLine(img, cvPoint(center.x+size, center.y+size),
-    cvPoint(center.x-size, center.y-size), color, 1);
-  cvLine(img, cvPoint(center.x+size, center.y-size),
-    cvPoint(center.x-size, center.y+size), color, 1);
-}
+
 
 void ObjectTracker::processImage( IplImage* frame, IplImage** output )
 {
@@ -64,48 +87,46 @@ void ObjectTracker::processImage( IplImage* frame, IplImage** output )
 
   findConnectedComponents(mask_, 0, perimScaleThrhold_, &count_, rectsStat_, centersStat_);
   cvCvtColor(mask_, mask3C_, CV_GRAY2RGB);
-  if (currObjs_.empty()) {
-    for (int i=0; i<count_; i++) {
-      char label[512];
-      sprintf(label, "%f", numObjs_);
-      ForegroundObject *newObj = new ForegroundObject(label, centersStat_[i]);
-      currObjs_.push_back(newObj);
-    }
-  } else {
-    matchObjects(centersStat_, count_);
-    for (int i=0; i<currObjs_.size(); i++) {
-      drawCross(mask3C_, 
-        currObjs_[i]->positionHistory_[currObjs_[i]->positionHistory_.size() - 1], 
-        5, cvScalar(255,0,0));
-      drawCross(mask3C_, 
-        currObjs_[i]->predictedPositionHistory_[currObjs_[i]->predictedPositionHistory_.size() - 1], 
-        5, cvScalar(0,255,0));
-      drawCross(mask3C_, 
-        currObjs_[i]->correctedPositionHistory_[currObjs_[i]->correctedPositionHistory_.size() - 1], 
-        5, cvScalar(0,0,255));
-    }
+
+  matchObjects(centersStat_, count_);
+  for (int i=0; i<currObjs_.size(); i++) {
+    drawText(mask3C_, currObjs_[i]->label_.c_str(), 
+      currObjs_[i]->positionHistory_[currObjs_[i]->positionHistory_.size() - 1],
+      cvScalar(255,255,0));
+    drawCross(mask3C_, 
+      currObjs_[i]->positionHistory_[currObjs_[i]->positionHistory_.size() - 1], 
+      5, cvScalar(255,0,0));
+    drawCross(mask3C_, 
+      currObjs_[i]->predictedPositionHistory_[currObjs_[i]->predictedPositionHistory_.size() - 1], 
+      5, cvScalar(0,255,0));
+    drawCross(mask3C_, 
+      currObjs_[i]->correctedPositionHistory_[currObjs_[i]->correctedPositionHistory_.size() - 1], 
+      5, cvScalar(0,0,255));
   }
 
   cvNamedWindow("4", CV_WINDOW_NORMAL);
   cvShowImage("4", mask3C_);
 }
 
-void printMatrix(double **m, int rows, int cols) {
-  printf("\n");
-  for (int i=0; i<rows; i++) {
-    for (int j=0; j<cols; j++) {
-      printf("%10f\t", m[i][j]);
-    }
-    printf("\n");
-  }
-}
+
 
 void ObjectTracker::matchObjects(CvPoint *newCenters, int size) {
+  if (currObjs_.empty()) {
+    for (int i=0; i<size; i++) {
+      createNewObject(newCenters[i]);
+    }
+    return;
+  }
+
+  if (size == 0) {
+    removeObjects();
+  }
+
   int parameter = imgSize_.width + imgSize_.height;
   int rows = currObjs_.size();
   int cols = size;
   objsM_ = new double*[rows];
-  // TODO: clean up memory of objsM_
+  
   for (int i=0; i<rows; i++) {
     objsM_[i] = new double[cols];
   }
@@ -118,13 +139,90 @@ void ObjectTracker::matchObjects(CvPoint *newCenters, int size) {
     for (int j=0; j<cols; j++) {
       CvPoint distance = subVectors(predictedPnts[i], newCenters[j]);
       objsM_[i][j] = getMagnitude(distance) / parameter;
-      if (objsM_[i][j] < matchThreshold_) {
-        currObjs_[i]->correctPosition(newCenters[j]);
-      }
     }
   }
 
+  vector<int> list;
+  // Check columns
+  for (int j=0; j<cols; j++) {
+    list.clear();
+    for (int i=0; i<rows; i++) {
+      if (objsM_[i][j] < matchThreshold_) {
+        list.push_back(i);
+      }
+    }
+    switch (list.size()) {
+    case 0: // New object
+      createNewObject(newCenters[j]);
+      break;
+    case 1:
+      break;
+    default:
+      break;
+    }
+  }
+
+  // Check rows
+  vector<int> removedObjectsv;
+  removedObjectsv.clear();
+  for (int i=0; i<rows; i++) {
+    list.clear();
+    for (int j=0; j<cols; j++) {
+      if (objsM_[i][j] < matchThreshold_) {
+        list.push_back(j);
+      }
+    }
+
+    switch(list.size()) {
+    case 0: // No more match
+      removedObjectsv.push_back(i);
+      break;
+    case 1:
+      currObjs_[i]->correctPosition(newCenters[list[0]]);
+      break;
+    default:
+      break;
+    }
+  }
+
+  removeObjects(&removedObjectsv);
+
+  
   printMatrix(objsM_, rows, cols);
+  for (int i=0; i<rows; i++) {
+    delete[] objsM_[i];
+  }
+  delete[] objsM_;
+}
+
+void ObjectTracker::removeObjects(vector<int> *iterators /* = NULL */) {
+  // remove all
+  if (!iterators) {
+    for (int i=0; i<currObjs_.size(); i++) {
+      delete currObjs_[i];
+    }
+    currObjs_.clear();
+  } else {
+    for (int i=0; i<iterators->size(); i++) {
+      delete currObjs_[(*iterators)[i]];
+      currObjs_[(*iterators)[i]] = NULL;
+    }
+    for (vector<ForegroundObject*>::iterator i=currObjs_.begin(); i!=currObjs_.end();) {
+      if (*i == NULL) {
+        i = currObjs_.erase(i);
+      } else {
+        i++;
+      }
+    }
+  }
+}
+
+void ObjectTracker::createNewObject(CvPoint center) {
+  char label[512];
+  sprintf(label, "%d", numObjs_);
+  numObjs_++;
+  ForegroundObject *newObj = new ForegroundObject(label, center);
+  currObjs_.push_back(newObj);
 }
 
 void ObjectTracker::findConnectedComponents( IplImage* mask, int poly1_hull2 /* = 0 */, double perimScale /* = 0.25 */, int* num /* = NULL */, CvRect* bbs /* = NULL */, CvPoint* centers /* = NULL */ ) {
