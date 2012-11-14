@@ -99,3 +99,22 @@ bool areOnSameSide(CvPoint2D32f first, CvPoint2D32f second,
 	double x = (a.cross(b)).dot(c.cross(b));
 	return x>0?true:false;
 }
+
+bool isOnOrBetween(CvPoint2D32f p, CvPoint2D32f line11, CvPoint2D32f line12,
+  CvPoint2D32f line21, CvPoint2D32f line22) {
+  RowVector3d a, b, c, d;
+  a << line11.x - line12.x, line11.y - line12.y, 0;
+  b << line21.x - line22.x, line21.y - line22.y, 0;
+  c << p.x - line11.x, p.y - line11.y, 0;
+  d << p.x - line21.x, p.y - line21.y, 0;
+  double x = (a.cross(c)).dot(b.cross(d));
+  return x<=0?true:false;
+}
+
+bool isOnOrInConvex(CvPoint2D32f p, CvPoint2D32f p1, CvPoint2D32f p2, CvPoint2D32f p3, CvPoint2D32f p4) {
+  if (!isOnOrBetween(p, p1, p2, p4, p3))
+    return false;
+  if (!isOnOrBetween(p, p1, p4, p2, p3))
+    return false;
+  return true;
+}

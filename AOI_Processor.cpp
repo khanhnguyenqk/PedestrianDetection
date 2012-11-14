@@ -94,6 +94,8 @@ void AoiProcessorWindow::draw() {
 				cloneAndDrawAOIs();
 				drawImageOnMainWindow(clone_);
 				if (extract_) {
+          // TODO: change this to run the video and save AOI into smaller videos.
+          //  No need to track motion in every AOI. The process is very resource consuming.
 					vector<IplImage*> motionTracked;
 					aois_ = extractAOI(currFrame_, AOIs_);
 					trackMotionAndIllustrate(aois_, motionTracked);
@@ -101,7 +103,7 @@ void AoiProcessorWindow::draw() {
 					releaseImageVector(aois_);
 					releaseImageVector(motionTracked);
 				} else {
-					// TODO:
+					// TODO: 
 					if (!wholeMotionDetector_) {
 						wholeMotionDetector_ = new ObjectTracker(cvSize(currFrame_->width,
 												currFrame_->height));
