@@ -155,3 +155,15 @@ void AreaOfInterest::drawSelfOnImage(IplImage* img) {
 		cvPoint(rect_.x+rect_.width, rect_.y+rect_.height), 
 		color_, thickness_);
 }
+
+bool AreaOfInterest::doesContainPoint(CvPoint p) {
+  if (p.x < rect_.x)
+    return false;
+  if (p.x > rect_.x + rect_.width)
+    return false;
+  if (p.y < rect_.y)
+    return false;
+  if (p.y > rect_.y + rect_.height)
+    return false;
+  return true;
+}

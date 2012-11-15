@@ -104,7 +104,7 @@ void AoiTrapezium::moveCorner(int drawMethod, CvPoint vector) {
 	}
 }
 
-bool AoiTrapezium::isPointOnAndIn(CvPoint p) {
+bool AoiTrapezium::doesContainPoint(CvPoint p) {
   CvPoint2D32f f = cvPoint2D32f(p.x, p.y);
   return isOnOrInConvex(f, pts_[0], pts_[1], pts_[2], pts_[3]);
 }

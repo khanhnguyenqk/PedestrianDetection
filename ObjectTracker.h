@@ -28,9 +28,11 @@ protected:
   double perimScaleThrhold_;
 
   // Objects tracker
+public:
+  vector<ForegroundObject> currObjs_;
+protected:
   double matchThreshold_;
   long int numObjs_;
-  vector<ForegroundObject*> currObjs_;
   double **objsM_;
   CvPoint *centersStat_;
   CvRect *rectsStat_;

@@ -90,25 +90,23 @@ void ObjectTracker::processImage( IplImage* frame, IplImage** output )
 
   matchObjects(centersStat_, count_);
   for (int i=0; i<currObjs_.size(); i++) {
-    drawText(mask3C_, currObjs_[i]->label_.c_str(), 
-      currObjs_[i]->positionHistory_[currObjs_[i]->positionHistory_.size() - 1],
+    drawText(mask3C_, currObjs_[i].label_.c_str(), 
+      currObjs_[i].positionHistory_[currObjs_[i].positionHistory_.size() - 1],
       cvScalar(255,255,0));
     drawCross(mask3C_, 
-      currObjs_[i]->positionHistory_[currObjs_[i]->positionHistory_.size() - 1], 
+      currObjs_[i].positionHistory_[currObjs_[i].positionHistory_.size() - 1], 
       5, cvScalar(255,0,0));
     drawCross(mask3C_, 
-      currObjs_[i]->predictedPositionHistory_[currObjs_[i]->predictedPositionHistory_.size() - 1], 
+      currObjs_[i].predictedPositionHistory_[currObjs_[i].predictedPositionHistory_.size() - 1], 
       5, cvScalar(0,255,0));
     drawCross(mask3C_, 
-      currObjs_[i]->correctedPositionHistory_[currObjs_[i]->correctedPositionHistory_.size() - 1], 
+      currObjs_[i].correctedPositionHistory_[currObjs_[i].correctedPositionHistory_.size() - 1], 
       5, cvScalar(0,0,255));
   }
 
   cvNamedWindow("4", CV_WINDOW_NORMAL);
   cvShowImage("4", mask3C_);
 }
-
-
 
 void ObjectTracker::matchObjects(CvPoint *newCenters, int size) {
   if (currObjs_.empty()) {
@@ -132,7 +130,7 @@ void ObjectTracker::matchObjects(CvPoint *newCenters, int size) {
   }
   CvPoint *predictedPnts = new CvPoint[rows];
   for (int i=0; i<rows; i++) {
-    predictedPnts[i] = currObjs_[i]->predictNextPosition();
+    predictedPnts[i] = currObjs_[i].predictNextPosition();
   }
 
   for (int i=0; i<rows; i++) {
@@ -178,7 +176,7 @@ void ObjectTracker::matchObjects(CvPoint *newCenters, int size) {
       removedObjectsv.push_back(i);
       break;
     case 1:
-      currObjs_[i]->correctPosition(newCenters[list[0]]);
+      currObjs_[i].correctPosition(newCenters[list[0]]);
       break;
     default:
       break;
@@ -188,7 +186,7 @@ void ObjectTracker::matchObjects(CvPoint *newCenters, int size) {
   removeObjects(&removedObjectsv);
 
   
-  printMatrix(objsM_, rows, cols);
+  //printMatrix(objsM_, rows, cols);
   for (int i=0; i<rows; i++) {
     delete[] objsM_[i];
   }
@@ -198,17 +196,13 @@ void ObjectTracker::matchObjects(CvPoint *newCenters, int size) {
 void ObjectTracker::removeObjects(vector<int> *iterators /* = NULL */) {
   // remove all
   if (!iterators) {
-    for (int i=0; i<currObjs_.size(); i++) {
-      delete currObjs_[i];
-    }
     currObjs_.clear();
   } else {
     for (int i=0; i<iterators->size(); i++) {
-      delete currObjs_[(*iterators)[i]];
-      currObjs_[(*iterators)[i]] = NULL;
+      currObjs_[(*iterators)[i]].positionHistory_.clear();
     }
-    for (vector<ForegroundObject*>::iterator i=currObjs_.begin(); i!=currObjs_.end();) {
-      if (*i == NULL) {
+    for (vector<ForegroundObject>::iterator i=currObjs_.begin(); i!=currObjs_.end();) {
+      if (!(*i).positionHistory_.size()) {
         i = currObjs_.erase(i);
       } else {
         i++;
@@ -221,7 +215,7 @@ void ObjectTracker::createNewObject(CvPoint center) {
   char label[512];
   sprintf(label, "%d", numObjs_);
   numObjs_++;
-  ForegroundObject *newObj = new ForegroundObject(label, center);
+  ForegroundObject newObj(label, center);
   currObjs_.push_back(newObj);
 }
 

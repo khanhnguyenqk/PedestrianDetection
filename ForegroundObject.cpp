@@ -59,3 +59,15 @@ CvPoint ForegroundObject::correctPosition(CvPoint newPosition) {
   correctedPositionHistory_.push_back(ret);
   return ret;
 }
+
+bool ForegroundObject::isEqual(ForegroundObject another) {
+  if (another.label_ != label_)
+    return false;
+  /*if (another.positionHistory_.size() != positionHistory_.size())
+    return false;
+  if (another.predictedPositionHistory_.size() != predictedPositionHistory_.size())
+    return false;
+  if (another.correctedPositionHistory_.size() != correctedPositionHistory_.size())
+    return false;*/
+  return true;
+}

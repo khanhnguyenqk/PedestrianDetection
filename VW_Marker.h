@@ -23,8 +23,8 @@ class VideoWindowMarker :
 protected:
 	bool useRect_;
 	bool cloneDone_;
-	vector<AreaOfInterest*> AOIs_;
-	CR_Iterator currentAOI_;
+	vector<AreaOfInterest*> aois_;
+	CR_Iterator currentAoi_;
 	int drawStatus_;
 	bool drawnOrChanged_;
 	CvPoint lastMousePoint_;

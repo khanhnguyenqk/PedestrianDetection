@@ -26,4 +26,5 @@ public:
   virtual ~ForegroundObject(void);
   CvPoint correctPosition(CvPoint newPosition);
   CvPoint predictNextPosition();
+  bool isEqual(ForegroundObject another);
 };

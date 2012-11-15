@@ -46,6 +46,7 @@ public:
 
 	virtual void reassignedCorners() = 0;
 	virtual CvPoint2D32f getPoint(int i) = 0;
+  virtual bool doesContainPoint(CvPoint p);
 };
 
 

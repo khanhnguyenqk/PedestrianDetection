@@ -8,17 +8,19 @@
 #include "CvPoint_Wrapper.h"
 #include "vw_marker.h"
 #include "ObjectTracker.h"
+#include "ForegroundObject.h"
 
-class AoiProcessorWindow :
+class AoiProcessWindow :
 	public VideoWindowMarker
 {
 protected:
 	// Cropped Area of Interest (AOI) from drawn box
-	ObjectTracker* wholeMotionDetector_;
+	ObjectTracker* motionDetector_;
 	vector<ObjectTracker*> motionDetectors_;
-	vector<IplImage*> aois_;
+	vector<IplImage*> extractedAois_;
 	vector<char*> windowNames_;
 	bool extract_;
+  vector<ForegroundObject> pastObjects_;
 
 	// Methods
 	void motionDetectorManage(int size);
@@ -28,20 +30,20 @@ protected:
 	void drawPictureOnSubwindows(vector<IplImage*> images);
 	void releaseImageVector(vector<IplImage*> &images);
 	void trackMotionAndIllustrate(vector<IplImage*> src, vector<IplImage*> &dst);
+  void analyzeObjects(vector<ForegroundObject> objs);
 public:
-	AoiProcessorWindow(int x,int y , int w, int h,
+	AoiProcessWindow(int x,int y , int w, int h,
 		const char* video=0, const char *L=0):VideoWindowMarker(x,y,w,h,video,L) {
 			extract_ = false;
-			wholeMotionDetector_ = NULL;
+			motionDetector_ = NULL;
 	}
-	virtual ~AoiProcessorWindow(void);
+	virtual ~AoiProcessWindow(void);
 	virtual void draw();
 
 	void saveMarkedImage(IplImage* image);
 	bool saveScreen();
 	vector<IplImage*> extractAOI(IplImage *image, vector<AreaOfInterest*> rs);
 	virtual int handle(int event);
-
 
 // Utilities
 public:

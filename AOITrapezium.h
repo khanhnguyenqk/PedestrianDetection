@@ -30,5 +30,5 @@ public:
 	virtual void moveCorner(int drawMethod, CvPoint vector);
 	static bool isConvex(CvPoint2D32f pts[4]);
 	virtual void drawSelfOnImage(IplImage* img);
-  bool isPointOnAndIn(CvPoint p);
+  virtual bool doesContainPoint(CvPoint p);
 };
