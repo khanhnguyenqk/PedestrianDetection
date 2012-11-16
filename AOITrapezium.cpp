@@ -39,13 +39,13 @@ int AoiTrapezium::actionController(CvPoint mousePointer, bool callParent) {
 		cornerZone1 = l1 * cornerLengthPercentage_; cornerZone2 = l2 * cornerLengthPercentage_;
 		int ret = -1;
 		if ((mouse - pts[0]).norm() <= cornerZone1) {
-			ret = P0;
+			ret = TRAPEZIUM_P0;
 		} else if ((mouse - pts[2]).norm() <= cornerZone1) {
-			ret = P2;
+			ret = TRAPEZIUM_P2;
 		} else if ((mouse - pts[1]).norm() <= cornerZone2) {
-			ret = P1;
+			ret = TRAPEZIUM_P1;
 		} else if ((mouse - pts[3]).norm() <= cornerZone2) {
-			ret = P3;
+			ret = TRAPEZIUM_P3;
 		}
 		if (ret != -1) return ret;
 		return MOVE_RECT;
@@ -54,16 +54,19 @@ int AoiTrapezium::actionController(CvPoint mousePointer, bool callParent) {
 		return -1;
 }
 
-void AoiTrapezium::moveCorner(int drawMethod, CvPoint vector) {
+void AoiTrapezium::modify(int drawMethod, CvPoint vector) {
 	CvPoint2D32f dest;
 	CvPoint2D32f newPoints[4];
 	switch (drawMethod) {
+  case MOVE_RECT:
+    move(vector);
+    break;
 	case RESIZE_TL: case RESIZE_TR: case RESIZE_BR: case RESIZE_BL:
 		pts_[0] = pts_[1] = pts_[2] = pts_[3] = cvPoint2D32f(0.0, 0.0);
-		AreaOfInterest::moveCorner(drawMethod, vector);
+		AreaOfInterest::modify(drawMethod, vector);
 		reassignedCorners();
 		break;
-	case P0:
+	case TRAPEZIUM_P0:
 		dest = addVectors(pts_[0], vector);
 		newPoints[0] = dest; 
 		newPoints[1] = pts_[1]; newPoints[2] = pts_[2]; newPoints[3] = pts_[3];
@@ -72,7 +75,7 @@ void AoiTrapezium::moveCorner(int drawMethod, CvPoint vector) {
 		}
 		fixRectangleBoundary();
 		break;
-	case P1:
+	case TRAPEZIUM_P1:
 		dest = addVectors(pts_[1], vector);
 		newPoints[1] = dest; 
 		newPoints[0] = pts_[0]; newPoints[2] = pts_[2]; newPoints[3] = pts_[3];
@@ -81,7 +84,7 @@ void AoiTrapezium::moveCorner(int drawMethod, CvPoint vector) {
 		}
 		fixRectangleBoundary();
 		break;
-	case P2:
+	case TRAPEZIUM_P2:
 		dest = addVectors(pts_[2], vector);
 		newPoints[2] = dest; 
 		newPoints[1] = pts_[1]; newPoints[0] = pts_[0]; newPoints[3] = pts_[3];
@@ -90,7 +93,7 @@ void AoiTrapezium::moveCorner(int drawMethod, CvPoint vector) {
 		}
 		fixRectangleBoundary();
 		break;
-	case P3:
+	case TRAPEZIUM_P3:
 		dest = addVectors(pts_[3], vector);
 		newPoints[3] = dest; 
 		newPoints[1] = pts_[1]; newPoints[2] = pts_[2]; newPoints[0] = pts_[0];
@@ -100,7 +103,7 @@ void AoiTrapezium::moveCorner(int drawMethod, CvPoint vector) {
 		fixRectangleBoundary();
 		break;
 	default:
-		throw "Exception here, change to something meaningful please!";
+		throw "Exception here, modify to something meaningful please!";
 	}
 }
 
@@ -146,10 +149,9 @@ bool AoiTrapezium::isConvex(CvPoint2D32f pts[4]) {
 }
 
 void AoiTrapezium::drawSelfOnImage(IplImage* img) {
-	int lineType = 20;
 	AreaOfInterest::drawSelfOnImage(img);
-	cvLine(img, fromCvPoint2D32f(pts_[0]), fromCvPoint2D32f(pts_[1]), color_, thickness_, lineType);
-	cvLine(img, fromCvPoint2D32f(pts_[1]), fromCvPoint2D32f(pts_[2]), color_, thickness_, lineType);
-	cvLine(img, fromCvPoint2D32f(pts_[2]), fromCvPoint2D32f(pts_[3]), color_, thickness_, lineType);
-	cvLine(img, fromCvPoint2D32f(pts_[3]), fromCvPoint2D32f(pts_[0]), color_, thickness_, lineType);
+	cvLine(img, fromCvPoint2D32f(pts_[0]), fromCvPoint2D32f(pts_[1]), color_, thickness_, lineType_);
+	cvLine(img, fromCvPoint2D32f(pts_[1]), fromCvPoint2D32f(pts_[2]), color_, thickness_, lineType_);
+	cvLine(img, fromCvPoint2D32f(pts_[2]), fromCvPoint2D32f(pts_[3]), color_, thickness_, lineType_);
+	cvLine(img, fromCvPoint2D32f(pts_[3]), fromCvPoint2D32f(pts_[0]), color_, thickness_, lineType_);
 }

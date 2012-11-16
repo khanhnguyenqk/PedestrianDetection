@@ -9,6 +9,7 @@ AreaOfInterest::AreaOfInterest(void)
 	color_ = cvScalar(0.0, 255.0, 0.0);
 	colorOrg_ = NULL;
 	thickness_ = 1;
+  lineType_ = 20;
 }
 
 void AreaOfInterest::setRect(int x, int y, int w, int h) {
@@ -125,9 +126,12 @@ int AreaOfInterest::actionController(CvPoint mousePointer) {
 		return -1;
 }
 
-void AreaOfInterest::moveCorner(int drawMethod, CvPoint vector) {
+void AreaOfInterest::modify(int drawMethod, CvPoint vector) {
 	CvPoint v_x, v_y;
 	switch (drawMethod) {
+  case MOVE_RECT:
+    this->move(vector);
+    break;
 	case RESIZE_BR:
 		this->resizeAddVector(vector);
 		break;
@@ -145,15 +149,15 @@ void AreaOfInterest::moveCorner(int drawMethod, CvPoint vector) {
 		this->move(v_x); this->resizeAddVector(v_y);
 		break;
 	default:
-		throw "Exception here, change to something meaningful please!";
+		throw "Exception here, modify to something meaningful please!";
 	}
 	//void fixNegativeWH();
 }
 
 void AreaOfInterest::drawSelfOnImage(IplImage* img) {
 	cvRectangle(img, cvPoint(rect_.x, rect_.y),
-		cvPoint(rect_.x+rect_.width, rect_.y+rect_.height), 
-		color_, thickness_);
+		cvPoint(rect_.x+rect_.width, rect_.y+rect_.height),
+    color_, thickness_);
 }
 
 bool AreaOfInterest::doesContainPoint(CvPoint p) {

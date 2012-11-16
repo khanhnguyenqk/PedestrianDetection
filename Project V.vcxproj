@@ -88,6 +88,7 @@
     <ClInclude Include="AOITrapezium.h" />
     <ClInclude Include="ColorChooser.h" />
     <ClInclude Include="CvPoint_Wrapper.h" />
+    <ClInclude Include="DrawToolLine.h" />
     <ClInclude Include="ExLBMixtureOfGaussians.h" />
     <ClInclude Include="ForegroundObject.h" />
     <ClInclude Include="IBGS.h" />
@@ -109,6 +110,7 @@
     <ClCompile Include="AreaOfInterest.cpp" />
     <ClCompile Include="AOITrapezium.cpp" />
     <ClCompile Include="ColorChooser.cpp" />
+    <ClCompile Include="DrawToolLine.cpp" />
     <ClCompile Include="ExLBMixtureOfGaussians.cpp" />
     <ClCompile Include="ForegroundObject.cpp" />
     <ClCompile Include="LBMixtureOfGaussians.cpp" />

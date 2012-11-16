@@ -14,6 +14,7 @@ protected:
 	CvScalar color_;
 	CvScalar* colorOrg_;
 	int thickness_;
+  int lineType_;
 public:
 	AreaOfInterest(void);
 	~AreaOfInterest(void);
@@ -39,7 +40,7 @@ public:
 	virtual void move(CvPoint vector);
 	void fixNegativeWH();
 	bool contains(CvPoint p);
-	virtual void moveCorner(int drawMethod, CvPoint vector);
+	virtual void modify(int drawMethod, CvPoint vector);
 
 	virtual int actionController(CvPoint mousePointer);
 	virtual void drawSelfOnImage(IplImage* img);

@@ -12,20 +12,26 @@
 #include "videowindow.h"
 #include "AOITrapezium.h"
 #include "ColorChooser.h"
+#include "DrawToolLine.h"
 
 using namespace std;
-
-typedef vector<AreaOfInterest*>::iterator CR_Iterator;
 
 class VideoWindowMarker :
 	public VideoWindow
 {
 protected:
 	bool useRect_;
+  bool newTool_;
 	bool cloneDone_;
+  int new0_modify1_;
+  int aoi0_line1_;
+  int modifyCodeNum_;
+
 	vector<AreaOfInterest*> aois_;
-	CR_Iterator currentAoi_;
-	int drawStatus_;
+	vector<AreaOfInterest*>::iterator currentAoi_;
+  vector<DrawToolLine*> lines_;
+  vector<DrawToolLine*>::iterator currentLine_;
+	
 	bool drawnOrChanged_;
 	CvPoint lastMousePoint_;
 	ColorChooser colorChooser_;
@@ -34,29 +40,30 @@ public:
 		const char* video=0, const char *L=0):VideoWindow(x,y,w,h,video,L) {
 		useRect_ = true;
 		cloneDone_ = true;
-		drawStatus_ = NEW_RECT;
+    newTool_ = true;
+    aoi0_line1_ = 1;
+    new0_modify1_ = -1;
 	}
 	virtual ~VideoWindowMarker(void);
 	virtual int handle(int event);
 
 // Draw rect
 protected:
-	void drawAllAOIs(IplImage* img);
-	int mouseDrawingAOIHandle(int event);
-	int mouseMovingAOIHandle(int event);
-	int mouseResizeAOIHandle(int event);
-	void chooseDrawAction(int xMouse, int yMouse);
-	void darkenNonCurrent();
+	void drawAllTools(IplImage* img);
+	int mouseCreateToolHandle(int event);
+	int mouseModifyToolHandle(int event);
+  void chooseDrawAction(CvPoint mouse);
+  void markNewToolFlag();
 	int getRelativeMouseX(int x);
 	int getRelativeMouseY(int y);
 
 // Other
 public:
 	string getSaveDirectory(const char* fileName);
-	bool setDrawStatus(int status);
-	bool deleteCurrentAOI();
-	bool deleteAllAOIs();
-	bool cloneAndDrawAOIs();
+	bool setDrawStatus(int status = 0);
+	bool deleteCurrentTool();
+	bool deleteAllTools();
+	bool cloneAndDrawTools();
 	bool nextAOI();
 	bool prevAOI();
 	void useRectangle(bool b);

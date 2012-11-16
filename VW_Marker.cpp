@@ -22,7 +22,7 @@ int VideoWindowMarker::handle(int event) {
 		} else if (Fl::event_button() == FL_LEFT_MOUSE) {
 			x = getRelativeMouseX(Fl::event_x());
 			y = getRelativeMouseY(Fl::event_y());
-			chooseDrawAction(x, y);
+			chooseDrawAction(cvPoint(x, y));
 		}
 	case FL_DRAG:
 		if (Fl::event_button() == FL_RIGHT_MOUSE) {
@@ -34,23 +34,12 @@ int VideoWindowMarker::handle(int event) {
 			if (playStatus_ == PAUSE) {
 				int r;
 				cloneDone_ = false;
-				switch (drawStatus_) {
-				case NEW_RECT:
-					r = mouseDrawingAOIHandle(event);
-					break;
-				case MOVE_RECT:
-					r = mouseMovingAOIHandle(event);
-					break;
-				case RESIZE_BR:
-				case RESIZE_TL:
-				case RESIZE_TR:
-				case RESIZE_BL:
-				case P0: case P1: case P2: case P3:
-					r = mouseResizeAOIHandle(event);
-					break;
-				default:
-					return 0;
-				}
+        if (!new0_modify1_) {
+          r = mouseCreateToolHandle(event);
+        } else {
+          r = mouseModifyToolHandle(event);
+        }
+        
 				cloneDone_ = true;
 				return r;
 			}
@@ -60,130 +49,145 @@ int VideoWindowMarker::handle(int event) {
 	return VideoWindow::handle(event);
 }
 
-void VideoWindowMarker::drawAllAOIs(IplImage* img) {
-	CR_Iterator it = aois_.begin();
-	for (;it != aois_.end(); it++)
-		(*it)->drawSelfOnImage(img);
+void VideoWindowMarker::drawAllTools(IplImage* img) {
+  for (int i=0; i<aois_.size(); i++)
+    aois_[i]->drawSelfOnImage(clone_);
+  for (int i=0; i< lines_.size(); i++)
+    lines_[i]->drawSelfOnImage(clone_);
 }
 
-int VideoWindowMarker::mouseDrawingAOIHandle(int event) {
+int VideoWindowMarker::mouseCreateToolHandle(int event) {
 	int x = getRelativeMouseX(Fl::event_x());
 	int y = getRelativeMouseY(Fl::event_y());
-	AreaOfInterest *aoi = new AoiTrapezium;
-	switch (event) {
+  CvPoint mousePoint = cvPoint(x, y);
+  CvPoint vector = subVectors(mousePoint, lastMousePoint_);;
 
+  AreaOfInterest *aoi;
+  DrawToolLine *line;
+  if (!aoi0_line1_)
+	  aoi = new AoiTrapezium;
+  else if (aoi0_line1_ == 1)
+    line = new DrawToolLine;
+
+	switch (event) {
 	case FL_PUSH:
 		drawnOrChanged_ = true;
-		aoi->setRect(cvRect(x, y, 0, 0));
-		aois_.push_back(aoi);
-		currentAoi_=aois_.end() - 1;
-		(*currentAoi_)->setColor(colorChooser_.getAColor());
-		cloneAndDrawAOIs();
+
+    if (!aoi0_line1_) {
+      aoi->setRect(cvRect(x, y, 0, 0));
+      aois_.push_back(aoi);
+      currentAoi_=aois_.end() - 1;
+      (*currentAoi_)->setColor(colorChooser_.getAColor());
+    } else if (aoi0_line1_ == 1) {
+      line->setLine(cvPoint(x, y), cvPoint(x, y));
+      line->setColor(colorChooser_.getAColor());
+      lines_.push_back(line);
+      currentLine_=lines_.end() - 1;
+    }
+    lastMousePoint_ = mousePoint;
+		cloneAndDrawTools();
 		this->redraw();
 		return 1;
 	case FL_DRAG:
-		(*currentAoi_)->resize(x - (*currentAoi_)->getRect().x, y - (*currentAoi_)->getRect().y);
-		cloneAndDrawAOIs();
+    if (!aoi0_line1_) {
+      (*currentAoi_)->resize(x - (*currentAoi_)->getRect().x, y - (*currentAoi_)->getRect().y);
+    } else if (aoi0_line1_ == 1) {
+      (*currentLine_)->modify(LINE_P2, vector);
+    }
+    lastMousePoint_ = mousePoint;
+		cloneAndDrawTools();
 		this->redraw();
 		return 1;
 	case FL_RELEASE:
-		(*currentAoi_)->fixNegativeWH();
-		(*currentAoi_)->reassignedCorners();
-		cloneAndDrawAOIs();
+    if (!aoi0_line1_) {
+      (*currentAoi_)->fixNegativeWH();
+      (*currentAoi_)->reassignedCorners();
+    }
+		cloneAndDrawTools();
 		this->redraw();
-		drawStatus_ = -1;
+		new0_modify1_ = -1;
 		return 1;
 	default:
 		return 0;
 	}
 }
 
-int VideoWindowMarker::mouseMovingAOIHandle(int event) {
-	int x = getRelativeMouseX(Fl::event_x());
-	int y = getRelativeMouseY(Fl::event_y());
-	CvPoint mousePoint = cvPoint(x, y);
-	CvPoint vector;
-	switch (event) {
-
-	case FL_PUSH:
-		drawnOrChanged_ = true;
-		lastMousePoint_ = mousePoint;
-		cloneAndDrawAOIs();
-		return 1;
-	case FL_DRAG:
-		vector = subVectors(mousePoint, lastMousePoint_);
-		(*currentAoi_)->move(vector);
-		lastMousePoint_ = mousePoint;
-		cloneAndDrawAOIs();
-		this->redraw();
-		return 1;
-	case FL_RELEASE:
-		(*currentAoi_)->fixNegativeWH();
-		cloneAndDrawAOIs();
-		this->redraw();
-		drawStatus_ = -1;
-		return 1;
-	default:
-		return 0;
-	}
-}
-
-int VideoWindowMarker::mouseResizeAOIHandle(int event) {
+int VideoWindowMarker::mouseModifyToolHandle(int event) {
 	int x = getRelativeMouseX(Fl::event_x());
 	int y = getRelativeMouseY(Fl::event_y());
 	CvPoint mousePoint = cvPoint(x, y);
-	CvPoint vector = subVectors(mousePoint, lastMousePoint_);
-	
-	switch (event) {
+	CvPoint vector = subVectors(mousePoint, lastMousePoint_);;
 
+	switch (event) {
 	case FL_PUSH:
 		drawnOrChanged_ = true;
 		lastMousePoint_ = mousePoint;
-		cloneAndDrawAOIs();
+		cloneAndDrawTools();
 		return 1;
 	case FL_DRAG:
-		(*currentAoi_)->moveCorner(drawStatus_, vector);
-		
+    if (!aoi0_line1_)
+		  (*currentAoi_)->modify(modifyCodeNum_, vector);
+    else if (aoi0_line1_ == 1)
+      (*currentLine_)->modify(modifyCodeNum_, vector);
 		lastMousePoint_ = mousePoint;
-		cloneAndDrawAOIs();
+		cloneAndDrawTools();
 		this->redraw();
 		return 1;
 	case FL_RELEASE:
-		(*currentAoi_)->fixNegativeWH();
-		cloneAndDrawAOIs();
+    if (!aoi0_line1_)
+		  (*currentAoi_)->fixNegativeWH();
+		cloneAndDrawTools();
 		this->redraw();
-		drawStatus_ = -1;
+		new0_modify1_ = -1;
 		return 1;
 	default:
 		return 0;
 	}
 }
 
-void VideoWindowMarker::chooseDrawAction(int xMouse, int yMouse) {
-	if (drawStatus_ == -1) {
-		if (aois_.empty()) {
-			drawStatus_ = NEW_RECT;
+void VideoWindowMarker::chooseDrawAction( CvPoint mouse )
+{
+	if (new0_modify1_ == -1) {
+    new0_modify1_= 1;
+		if (aois_.empty() && lines_.empty()) {
+      markNewToolFlag();
 			return;
 		}
-		CvPoint p = cvPoint(xMouse, yMouse);
-		CR_Iterator it = currentAoi_;
-		do {
-			if (useRect_)
-				drawStatus_ = (*it)->actionController(p);
-			else
-				drawStatus_ = ((AoiTrapezium*)*it)->actionController(p);
-			if (drawStatus_ != -1) {
-				currentAoi_ = it;
-				return;
-			}
-			it++;
-			if (it == aois_.end()) it = aois_.begin();
-		} while (it != currentAoi_);
 
-		if (drawStatus_ == -1)
-			drawStatus_ = NEW_RECT;
-	} else if (drawStatus_ < 0)
-		drawStatus_ = NEW_RECT;
+    // Check on lines first because lines are smaller than aois
+    if (!lines_.empty()) {
+      vector<DrawToolLine*>::iterator itLine = currentLine_;
+      do {
+        modifyCodeNum_ = (*itLine)->actionController(mouse);
+        if (modifyCodeNum_ != -1) {
+          currentLine_ = itLine;
+          return;
+        }
+        itLine++;
+        if (itLine == lines_.end()) itLine = lines_.begin();
+      } while (itLine != currentLine_);
+    }
+
+    // Check on all aois
+    if (!aois_.empty()) {
+      vector<AreaOfInterest*>::iterator itAoi = currentAoi_;
+      do {
+        if (useRect_)
+          modifyCodeNum_ = (*itAoi)->actionController(mouse);
+        else
+          modifyCodeNum_ = ((AoiTrapezium*)*itAoi)->actionController(mouse);
+        if (modifyCodeNum_ != -1) {
+          currentAoi_ = itAoi;
+          return;
+        }
+        itAoi++;
+        if (itAoi == aois_.end()) itAoi = aois_.begin();
+      } while (itAoi != currentAoi_);
+    }
+
+		if (modifyCodeNum_ == -1)
+			markNewToolFlag();
+	}
 }
 
 string VideoWindowMarker::getSaveDirectory(const char* fileName) {
@@ -196,14 +200,14 @@ string VideoWindowMarker::getSaveDirectory(const char* fileName) {
 }
 
 bool VideoWindowMarker::setDrawStatus(int status) {
-	if (status==NEW_RECT) {
-		drawStatus_ = status;
+	if (!status) {
+		new0_modify1_ = status;
 		return true;
 	}
 	return false;
 }
 
-bool VideoWindowMarker::deleteCurrentAOI() {
+bool VideoWindowMarker::deleteCurrentTool() {
 	if (aois_.empty())
 		return true;
 	delete *currentAoi_;
@@ -212,7 +216,7 @@ bool VideoWindowMarker::deleteCurrentAOI() {
 	return true;
 }
 
-bool VideoWindowMarker::deleteAllAOIs() {
+bool VideoWindowMarker::deleteAllTools() {
 	if (aois_.empty())
 		return true;
 	for (unsigned i=0; i<aois_.size(); i++) {
@@ -223,27 +227,32 @@ bool VideoWindowMarker::deleteAllAOIs() {
 	return true;
 }
 
-bool VideoWindowMarker::cloneAndDrawAOIs() {
+bool VideoWindowMarker::cloneAndDrawTools() {
 	if (currFrame_ == NULL)
 		return false;
-	darkenNonCurrent();
+  // Darken all & Return the current aoi and line to original color
+  if (!aois_.empty()) {
+    for (int i=0; i<aois_.size(); i++)
+      aois_[i]->darkenColor();
+    (*currentAoi_)->returnOriginalColor();
+  }
+	
+  if (!lines_.empty()) {
+    for (int i=0; i< lines_.size(); i++)
+      lines_[i]->darkenColor();
+    (*currentLine_)->returnOriginalColor();
+  }
+
 	if (clone_)
 		cvReleaseImage(&clone_);
 	clone_ = cvCloneImage(currFrame_);
-	drawAllAOIs(clone_);
+
+	// Draw everything on the picture
+  drawAllTools(clone_);
+
 	return true;
 }
 
-void VideoWindowMarker::darkenNonCurrent() {
-	CR_Iterator it = aois_.begin();
-	for (;it != aois_.end(); it++) {
-		if (it != currentAoi_) {
-			(*it)->darkenColor();
-		} else {
-			(*it)->returnOriginalColor();
-		}
-	}
-}
 
 int VideoWindowMarker::getRelativeMouseX(int x) {
 	double ox,x1;
@@ -289,7 +298,7 @@ void VideoWindowMarker::draw() {
 			if (currFrame_ == NULL)
 				stop();
 			else {
-				cloneAndDrawAOIs();
+				cloneAndDrawTools();
 				drawImageOnMainWindow(clone_);
 			}
 		} else if ((playStatus_ == PAUSE)) {
@@ -298,11 +307,11 @@ void VideoWindowMarker::draw() {
 				stop();
 			else {
 				if (cloneDone_) {
-					cloneAndDrawAOIs();
+					cloneAndDrawTools();
 					drawImageOnMainWindow(clone_);
 				}
 				else {
-					drawAllAOIs(currFrame_);
+					drawAllTools(currFrame_);
 					drawImageOnMainWindow(currFrame_);
 				}
 			}
@@ -318,4 +327,9 @@ void VideoWindowMarker::useRectangle(bool b) {
 
 bool VideoWindowMarker::isUsingRectangle() {
 	return useRect_;
+}
+
+void VideoWindowMarker::markNewToolFlag()
+{
+  new0_modify1_ = 0;
 }

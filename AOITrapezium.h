@@ -2,8 +2,8 @@
 #include "AreaOfInterest.h"
 
 enum DrawActionExtension {
-	P0 = 6,
-	P1, P2, P3
+	TRAPEZIUM_P0 = 6,
+	TRAPEZIUM_P1, TRAPEZIUM_P2, TRAPEZIUM_P3
 };
 
 class AoiTrapezium :
@@ -27,7 +27,7 @@ public:
 	void reassignedCorners();
 	virtual void move(CvPoint vector);
 	virtual int actionController(CvPoint mousePointer, bool callParent = true);
-	virtual void moveCorner(int drawMethod, CvPoint vector);
+	virtual void modify(int drawMethod, CvPoint vector);
 	static bool isConvex(CvPoint2D32f pts[4]);
 	virtual void drawSelfOnImage(IplImage* img);
   virtual bool doesContainPoint(CvPoint p);

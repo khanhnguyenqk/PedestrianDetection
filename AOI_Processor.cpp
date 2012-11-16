@@ -91,7 +91,7 @@ void AoiProcessWindow::draw() {
 			if (currFrame_ == NULL)
 				stop();
 			else {
-				cloneAndDrawAOIs();
+				cloneAndDrawTools();
 				drawImageOnMainWindow(clone_);
 				if (extract_) {
           // TODO: change this to run the video and save AOI into smaller videos.
@@ -124,11 +124,11 @@ void AoiProcessWindow::draw() {
 				stop();
 			else {
 				if (cloneDone_) {
-					cloneAndDrawAOIs();
+					cloneAndDrawTools();
 					drawImageOnMainWindow(clone_);
 				}
 				else {
-					drawAllAOIs(currFrame_);
+					drawAllTools(currFrame_);
 					drawImageOnMainWindow(currFrame_);
 				}
 			}
