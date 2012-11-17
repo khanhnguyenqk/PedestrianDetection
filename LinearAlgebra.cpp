@@ -11,6 +11,13 @@ LineSegment2D::LineSegment2D() {
 	line2D_.resize(3,1);
 }
 
+LineSegment2D::LineSegment2D(CvPoint2D32f a, CvPoint2D32f b) {
+  line2D_.resize(3,1);
+  line2D_ = findLineFormular2D(a, b);
+  a_ = a;
+  b_ = b;
+}
+
 bool isNumber(double x) {
 	return (x == x);
 }
@@ -117,4 +124,47 @@ bool isOnOrInConvex(CvPoint2D32f p, CvPoint2D32f p1, CvPoint2D32f p2, CvPoint2D3
   if (!isOnOrBetween(p, p1, p4, p2, p3))
     return false;
   return true;
+}
+
+CvPoint2D32f findIntersection(MatrixXd a, MatrixXd b) {
+  double a1 = a(0,0), b1 = a(1,0), c1 = -a(2,0);
+  double a2 = b(0,0), b2 = b(1,0), c2 = -b(2,0);
+  double delta = a1*b2 - a2*b1;
+  if (!delta) {
+    throw UNSOLVABLE;
+  }
+  double x = (b2*c1 - b1*c2) / delta;
+  double y = (a1*c2 - a2*c1) / delta;
+  CvPoint2D32f ret = cvPoint2D32f(x, y);
+  return ret;
+}
+
+CvPoint2D32f findIntersection(LineSegment2D a, LineSegment2D b) {
+  CvPoint2D32f ret;
+  try {
+    ret = findIntersection(a.line2D_, b.line2D_);
+  }
+  catch (int e) {
+    throw e;
+  }
+
+  if ((a.a_.x >= a.b_.x) && !(a.a_.x >= ret.x && ret.x >= a.b_.x))
+    throw UNSOLVABLE;
+  if ((a.a_.x <= a.b_.x) && !(a.a_.x <= ret.x && ret.x <= a.b_.x))
+    throw UNSOLVABLE;
+  if ((a.a_.y >= a.b_.y) && !(a.a_.y >= ret.y && ret.y >= a.b_.y))
+    throw UNSOLVABLE;
+  if ((a.a_.y <= a.b_.y) && !(a.a_.y <= ret.y && ret.y <= a.b_.y))
+    throw UNSOLVABLE;
+
+  if ((b.a_.x >= b.b_.x) && !(b.a_.x >= ret.x && ret.x >= b.b_.x))
+    throw UNSOLVABLE;
+  if ((b.a_.x <= b.b_.x) && !(b.a_.x <= ret.x && ret.x <= b.b_.x))
+    throw UNSOLVABLE;
+  if ((b.a_.y >= b.b_.y) && !(b.a_.y >= ret.y && ret.y >= b.b_.y))
+    throw UNSOLVABLE;
+  if ((b.a_.y <= b.b_.y) && !(b.a_.y <= ret.y && ret.y <= b.b_.y))
+    throw UNSOLVABLE;
+
+  return ret;
 }

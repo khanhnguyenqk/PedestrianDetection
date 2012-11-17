@@ -333,3 +333,7 @@ void VideoWindowMarker::markNewToolFlag()
 {
   new0_modify1_ = 0;
 }
+
+void VideoWindowMarker::setDrawLineFlag() {
+  aoi0_line1_ = !aoi0_line1_;
+};

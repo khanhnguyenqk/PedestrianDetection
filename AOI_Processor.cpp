@@ -93,29 +93,28 @@ void AoiProcessWindow::draw() {
 			else {
 				cloneAndDrawTools();
 				drawImageOnMainWindow(clone_);
-				if (extract_) {
-          // TODO: change this to run the video and save AOI into smaller videos.
-          //  No need to track motion in every AOI. The process is very resource consuming.
-					vector<IplImage*> motionTracked;
-					extractedAois_ = extractAOI(currFrame_, aois_);
-					trackMotionAndIllustrate(extractedAois_, motionTracked);
-					drawPictureOnSubwindows(motionTracked);
-					releaseImageVector(extractedAois_);
-					releaseImageVector(motionTracked);
+				//if (extract_) {
+    //      // TODO: change this to run the video and save AOI into smaller videos.
+    //      //  No need to track motion in every AOI. The process is very resource consuming.
+				//	vector<IplImage*> motionTracked;
+				//	extractedAois_ = extractAOI(currFrame_, aois_);
+				//	trackMotionAndIllustrate(extractedAois_, motionTracked);
+				//	drawPictureOnSubwindows(motionTracked);
+				//	releaseImageVector(extractedAois_);
+				//	releaseImageVector(motionTracked);
+				//} 
+				// TODO: 
+				if (!motionDetector_) {
+					motionDetector_ = new ObjectTracker(cvSize(currFrame_->width,
+											currFrame_->height));
+					cvNamedWindow("Tracked", CV_WINDOW_NORMAL);
 				} else {
-					// TODO: 
-					if (!motionDetector_) {
-						motionDetector_ = new ObjectTracker(cvSize(currFrame_->width,
-												currFrame_->height));
-						cvNamedWindow("Tracked", CV_WINDOW_NORMAL);
-					} else {
-						IplImage *ret = NULL;
-            motionDetector_->processImage(currFrame_, &ret);
-            cvNamedWindow("Tracked", CV_WINDOW_NORMAL);
-						cvShowImage("Tracked", ret);
-						cvReleaseImage(&ret);
-            analyzeObjects(motionDetector_->currObjs_);
-					}
+					IplImage *ret = NULL;
+          motionDetector_->processImage(currFrame_, &ret);
+          cvNamedWindow("Tracked", CV_WINDOW_NORMAL);
+					cvShowImage("Tracked", ret);
+					cvReleaseImage(&ret);
+          analyzeObjects(motionDetector_->currObjs_);
 				}
 			}
 		} else if ((playStatus_ == PAUSE)) {
@@ -149,9 +148,24 @@ void AoiProcessWindow::analyzeObjects(vector<ForegroundObject> objs) {
       for (int j=0; j<objs.size(); j++) {
         if (pastObjects_[i].isEqual(objs[j])) {
           match = true;
+          CvPoint lastPosition = *(pastObjects_[i].correctedPositionHistory_.end() - 1);
+          CvPoint newPosition = *(objs[j].correctedPositionHistory_.end() - 1);
+
+          // Lines
+          try {
+            
+            for (int k=0; k<lines_.size(); k++) {
+              LineSegment2D line(fromCvPoint(lines_[k]->p1_), fromCvPoint(lines_[k]->p2_));
+              LineSegment2D trajectory(fromCvPoint(lastPosition), fromCvPoint(newPosition));
+              try {
+                findIntersection(line, trajectory);
+                printf("Object %s passes line %d\n", objs[j].label_.c_str(), k);
+              } catch (...) {}
+            }
+          } catch (...) {}
+
+          // AOIS
           for (int k=0; k<aois_.size(); k++) {
-            CvPoint lastPosition = *(pastObjects_[i].correctedPositionHistory_.end() - 1);
-            CvPoint newPosition = *(objs[j].correctedPositionHistory_.end() - 1);
             if (useRect_) {
               if (aois_[k]->doesContainPoint(lastPosition) && !aois_[k]->doesContainPoint(newPosition))
                 printf("Object %s leaves AOI %d\n", objs[j].label_.c_str(), k);
@@ -166,6 +180,7 @@ void AoiProcessWindow::analyzeObjects(vector<ForegroundObject> objs) {
                 printf("Object %s enters AOI %d\n", objs[j].label_.c_str(), k);
             }
           }
+
         }
       }
     }

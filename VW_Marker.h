@@ -68,6 +68,7 @@ public:
 	bool prevAOI();
 	void useRectangle(bool b);
 	bool isUsingRectangle();
+  void setDrawLineFlag();
 
 // Play control extend
 	virtual void draw();

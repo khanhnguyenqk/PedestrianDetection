@@ -40,7 +40,9 @@ public:
   Fl_Button *nextAOI_;
   Fl_Button *prevAOI_;
   Fl_Button *savePicture_;
+  // TODO: reorganize the use of Lines and Trapezium. Suggest to get rid of rectangle
   Fl_Button *useRect_;
+  Fl_Button *drawLine_;
 
   // Call back
   void cb_play_i(Fl_Button* obj, void* v);
@@ -102,6 +104,9 @@ public:
 
   void cb_useRect_i(Fl_Button* obj, void* v);
   static void cb_useRect(Fl_Button* obj, void* v);
+
+  void cb_drawLine_i(Fl_Button* obj, void* v);
+  static void cb_drawLine(Fl_Button* obj, void* v);;
   // Others
 public:
 	void setFilePath(const char* filePath);

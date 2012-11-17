@@ -10,10 +10,12 @@ enum {
 };
 
 struct LineSegment2D {
+  // aX + bY + c = 0;
 	MatrixXd line2D_;
 	CvPoint2D32f a_;
 	CvPoint2D32f b_;
 	LineSegment2D();
+  LineSegment2D(CvPoint2D32f a, CvPoint2D32f b);
 };
 
 bool isLine2D(MatrixXd m);
@@ -31,3 +33,5 @@ bool isOnOrBetween(CvPoint2D32f p, CvPoint2D32f line11, CvPoint2D32f line12,
           CvPoint2D32f line21, CvPoint2D32f line22);
 bool isOnOrInConvex(CvPoint2D32f p, CvPoint2D32f p1, CvPoint2D32f p2,
   CvPoint2D32f p3, CvPoint2D32f p4);
+CvPoint2D32f findIntersection(MatrixXd a, MatrixXd b);
+CvPoint2D32f findIntersection(LineSegment2D a, LineSegment2D b);

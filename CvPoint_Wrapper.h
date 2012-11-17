@@ -46,6 +46,10 @@ inline CvPoint fromCvPoint2D32f(CvPoint2D32f p) {
 	return cvPoint((int)p.x, (int)p.y);
 }
 
+inline CvPoint2D32f fromCvPoint(CvPoint p) {
+  return cvPoint2D32f(p.x, p.y);
+}
+
 inline double getMagnitude(CvPoint p) {
   return sqrt(pow((double)p.x, 2.0) + pow((double)p.y, 2.0));
 }

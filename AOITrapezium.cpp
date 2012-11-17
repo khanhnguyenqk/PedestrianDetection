@@ -149,7 +149,7 @@ bool AoiTrapezium::isConvex(CvPoint2D32f pts[4]) {
 }
 
 void AoiTrapezium::drawSelfOnImage(IplImage* img) {
-	AreaOfInterest::drawSelfOnImage(img);
+	/*AreaOfInterest::drawSelfOnImage(img);*/
 	cvLine(img, fromCvPoint2D32f(pts_[0]), fromCvPoint2D32f(pts_[1]), color_, thickness_, lineType_);
 	cvLine(img, fromCvPoint2D32f(pts_[1]), fromCvPoint2D32f(pts_[2]), color_, thickness_, lineType_);
 	cvLine(img, fromCvPoint2D32f(pts_[2]), fromCvPoint2D32f(pts_[3]), color_, thickness_, lineType_);

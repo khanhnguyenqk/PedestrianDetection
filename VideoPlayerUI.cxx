@@ -154,6 +154,9 @@ VideoPlayerUI::VideoPlayerUI() {
 		{ useRect_ = new Fl_Button(xDrawTools+2*gap+wMedButton,yDrawTools+3*gap+2*hMedButton,wMedButton,hMedButton,
 			"Rectangle");
 		}
+    { drawLine_ = new Fl_Button(xDrawTools+gap, yDrawTools+4*gap+3*hMedButton, wMedButton, hMedButton,
+      "Line");
+    }
       o->end();
     } // Fl_Group* o
     mainWindow_->end();
@@ -194,6 +197,7 @@ VideoPlayerUI::VideoPlayerUI() {
   defaultSetting_->callback((Fl_Callback*)cb_default);
   savePicture_->callback((Fl_Callback*)cb_save);
   useRect_->callback((Fl_Callback*)cb_useRect);
+  drawLine_->callback((Fl_Callback*)cb_drawLine);
 }
 
 // Call back methods
@@ -352,6 +356,15 @@ void VideoPlayerUI::cb_useRect_i(Fl_Button* obj, void* v) {
 void VideoPlayerUI::cb_useRect(Fl_Button* obj, void* v) {
 	((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_useRect_i(obj, v);
 }
+
+void VideoPlayerUI::cb_drawLine_i(Fl_Button* obj, void* v) {
+  this->aoiProcessorWindow->setDrawLineFlag();
+}
+
+void VideoPlayerUI::cb_drawLine(Fl_Button* obj, void* v) {
+  ((VideoPlayerUI*)(obj->parent()->parent()->user_data()))->cb_drawLine_i(obj, v);
+}
+
 
 // Other methods
 void VideoPlayerUI::setFilePath(const char* filePath) {
